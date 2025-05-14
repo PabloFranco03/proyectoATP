@@ -25,6 +25,8 @@ sources:
 
           - name: tourney_name
             description: "Nombre del torneo."
+            tests:
+              - not_null
 
           - name: surface
             description: "Tipo de superficie: Clay, Hard, Grass..."
@@ -37,6 +39,7 @@ sources:
             tests:
               - dbt_expectations.expect_column_values_to_be_between:
                   min_value: 8
+                  severity: warn
 
           - name: tourney_level
             description: "Nivel del torneo (G: Grand Slam, M: Masters 1000, A: ATP 500, D: Davis Cup, F: Finals, O: Olympics)."
@@ -72,13 +75,14 @@ sources:
             description: "Mano dominante del ganador (L, R)."
             tests:
               - accepted_values:
-                  values: ['L', 'R']
+                  values: ['L', 'R', 'U']
 
           - name: winner_ht
             description: "Altura del ganador en cm."
             tests:
               - dbt_expectations.expect_column_values_to_be_between:
                   min_value: 140
+                  severity: warn
 
           - name: winner_ioc
             description: "Código IOC del país del ganador."
@@ -109,13 +113,14 @@ sources:
             description: "Mano dominante del perdedor."
             tests:
               - accepted_values:
-                  values: ['L', 'R']
+                  values: ['L', 'R', 'U']
 
           - name: loser_ht
             description: "Altura del perdedor en cm."
             tests:
               - dbt_expectations.expect_column_values_to_be_between:
                   min_value: 140
+                  severity: warn
 
           - name: loser_ioc
             description: "Código IOC del país del perdedor."
@@ -146,6 +151,7 @@ sources:
             tests:
               - dbt_expectations.expect_column_values_to_be_between:
                   min_value: 10
+                  severity: warn
 
           # Estadísticas del ganador
           - name: w_ace

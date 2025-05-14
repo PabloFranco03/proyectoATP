@@ -1,3 +1,3 @@
 {% macro es_torneo_principal(nivel_col) %}
-  {{ nivel_col }} IN ('G', 'M', 'A')
+  {{ nivel_col }} IN ('G', 'M', 'A','F')
 {% endmacro %}

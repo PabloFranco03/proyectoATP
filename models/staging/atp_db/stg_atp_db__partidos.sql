@@ -1,28 +1,36 @@
-{{ config(materialized='view') }}
+/*{{ config(
+    materialized = 'incremental',
+    unique_key = 'id_partido'
+) }}*/
 
 WITH source AS (
     SELECT *
     FROM {{ source('atp', 'matches') }}
     WHERE {{ es_torneo_principal('tourney_level') }}
+    /*{% if is_incremental() %}
+    AND TO_DATE(tourney_date, 'YYYYMMDD') >= (
+        SELECT MAX(TO_DATE(tourney_date, 'YYYYMMDD')) FROM {{ this }}
+    )
+    {% endif %}*/
 ),
 
 partidos AS (
     SELECT
         {{ dbt_utils.generate_surrogate_key(['tourney_id', 'match_num']) }} AS id_partido,
-        tourney_id         AS id_torneo,
-        match_num          AS numero_partido,
-        round              AS ronda,
-        minutes            AS duracion_minutos,
-        score              AS resultado,
-        winner_id          AS id_ganador,
-        loser_id           AS id_perdedor
+        {{ dbt_utils.generate_surrogate_key(['tourney_id']) }} AS id_torneo_anio,
+        match_num AS numero_partido_torneo,
+        round AS ronda,
+        minutes AS duracion_minutos,
+        score AS resultado,
+        {{ dbt_utils.generate_surrogate_key(['winner_id']) }} AS id_ganador,
+        {{ dbt_utils.generate_surrogate_key(['loser_id']) }} AS id_perdedor
     FROM source
 ),
 
 registro_vacio AS (
     SELECT
         NULL AS id_partido,
-        NULL AS id_torneo,
+        NULL AS id_torneo_anio,
         NULL AS numero_partido,
         NULL AS ronda,
         NULL AS duracion_minutos,
