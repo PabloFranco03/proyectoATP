@@ -27,18 +27,4 @@ partidos AS (
     FROM source
 ),
 
-registro_vacio AS (
-    SELECT
-        NULL AS id_partido,
-        NULL AS id_torneo_anio,
-        NULL AS numero_partido,
-        NULL AS ronda,
-        NULL AS duracion_minutos,
-        NULL AS resultado,
-        NULL AS id_ganador,
-        NULL AS id_perdedor
-)
-
 SELECT * FROM partidos
-UNION ALL
-SELECT * FROM registro_vacio

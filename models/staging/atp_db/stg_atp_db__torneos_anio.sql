@@ -8,6 +8,9 @@ campos_torneo_anio AS (
     SELECT DISTINCT
         {{ dbt_utils.generate_surrogate_key(['tourney_id']) }} AS id_torneo_anio,
         {{ dbt_utils.generate_surrogate_key(['tourney_name']) }} AS id_torneo,
+        surface AS superficie,
+        tourney_level AS nivel,
+        best_of AS sets_maximos,
         TO_DATE(tourney_date, 'YYYYMMDD') AS fecha_inicio,
         TO_CHAR(TO_DATE(tourney_date, 'YYYYMMDD'), 'YYYY') AS anio_inicio,
         TO_CHAR(TO_DATE(tourney_date, 'YYYYMMDD'), 'MM') AS mes_inicio,

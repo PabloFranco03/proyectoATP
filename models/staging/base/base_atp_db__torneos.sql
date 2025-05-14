@@ -7,10 +7,10 @@ WITH raw_matches AS (
 campos_torneo AS (
     SELECT
         {{ dbt_utils.generate_surrogate_key(['tourney_name']) }} as id_torneo,
-        tourney_name AS nombre,
-        surface AS superficie,
-        tourney_level AS nivel,
-        best_of AS sets_maximos
+        tourney_name AS nombre
+        --surface AS superficie,
+        --tourney_level AS nivel,
+        --best_of AS sets_maximos
     FROM raw_matches
 )
 

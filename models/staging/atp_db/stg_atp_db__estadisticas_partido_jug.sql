@@ -54,22 +54,5 @@ estadisticas_union AS (
     SELECT * FROM perdedor
 ),
 
-registro_vacio AS (
-    SELECT
-        NULL AS id_partido,
-        NULL AS id_jugador,
-        NULL AS ha_ganado,
-        NULL AS ace,
-        NULL AS doble_falta,
-        NULL AS puntos_saque,
-        NULL AS primeros_saques,
-        NULL AS puntos_ganados_1er,
-        NULL AS puntos_ganados_2do,
-        NULL AS juegos_saque,
-        NULL AS bp_salvados,
-        NULL AS bp_enfrentados
-)
-
 SELECT * FROM estadisticas_union
-UNION ALL
-SELECT * FROM registro_vacio
+
