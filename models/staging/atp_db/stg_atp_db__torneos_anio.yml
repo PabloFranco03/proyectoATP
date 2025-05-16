@@ -1,0 +1,66 @@
+models:
+  - name: stg_atp_db__torneos_anio
+    description: >
+      Modelo de stage que genera una vista única por torneo y año, a partir de la tabla cruda 'matches'.
+      Aplica limpieza textual y generación de claves surrogate para superficie, nivel de torneo y nombre del torneo.
+      Incluye información derivada de fecha y cantidad de jugadores.
+
+    columns:
+      - name: id_torneo_anio
+        description: "Clave surrogate única que representa un torneo en un año específico, basada en 'tourney_id'."
+        tests:
+          - not_null
+          - unique
+
+      - name: id_torneo
+        description: "Clave surrogate del torneo, generada a partir del nombre del torneo tras limpieza."
+        tests:
+          - not_null
+
+      - name: id_superficie
+        description: "Clave surrogate de la superficie (Hard, Clay, Grass) con limpieza aplicada."
+        tests:
+          - not_null
+
+      - name: id_nivel_torneo
+        description: "Clave surrogate del nivel del torneo (G, M, A, etc.)."
+        tests:
+          - not_null
+
+      - name: sets_maximos
+        description: "Cantidad máxima de sets por partido en el torneo (3 o 5)."
+        tests:
+          - not_null
+          - accepted_values:
+              values: [3, 5]
+
+      - name: fecha_inicio
+        description: "Fecha de inicio del torneo en formato DATE, derivada de `tourney_date`."
+        tests:
+          - not_null: {}
+
+      - name: anio_inicio
+        description: "Año de inicio del torneo, extraído de `tourney_date`."
+        tests:
+          - not_null: {}
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 1968
+              max_value: 2100
+              severity: warn
+
+      - name: mes_inicio
+        description: "Mes de inicio del torneo, extraído de 'tourney_date'."
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 1
+              max_value: 12
+
+      - name: total_jugadores
+        description: "Número total de jugadores en el cuadro principal del torneo."
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 8
+              max_value: 256
+              severity: warn

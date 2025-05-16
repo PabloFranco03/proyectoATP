@@ -1,7 +1,8 @@
 {{ config(materialized='table') }}
 
 WITH raw_matches AS (
-    SELECT *
+    SELECT 
+    surface
     FROM {{ source('atp', 'matches') }}
 )
 

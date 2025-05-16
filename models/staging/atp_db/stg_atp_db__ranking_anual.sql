@@ -1,3 +1,5 @@
+--hacer snapshot
+
 WITH source AS (
     SELECT *
     FROM {{ source('atp', 'matches') }}

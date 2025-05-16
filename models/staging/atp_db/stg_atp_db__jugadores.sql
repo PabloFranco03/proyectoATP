@@ -1,7 +1,15 @@
-{{ config(materialized='view') }}
-
 WITH source AS (
-    SELECT *
+    SELECT
+    winner_id, 
+    winner_name, 
+    winner_hand,
+    winner_ht,
+    winner_ioc,
+    loser_id,
+    loser_name,
+    loser_hand,
+    loser_ht,
+    loser_ioc
     FROM {{ source('atp', 'matches') }}
     WHERE {{ filtrado_copa_davis('tourney_level') }}
 ),

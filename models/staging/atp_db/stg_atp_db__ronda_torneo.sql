@@ -1,7 +1,8 @@
 {{ config(materialized='table') }}
 
 WITH raw_matches AS (
-    SELECT *
+    SELECT 
+    round
     FROM {{ source('atp', 'matches') }}
     WHERE {{ filtrado_copa_davis('tourney_level') }}
 )

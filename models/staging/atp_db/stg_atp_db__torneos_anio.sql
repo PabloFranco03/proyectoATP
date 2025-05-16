@@ -1,5 +1,12 @@
 WITH raw_matches AS (
-    SELECT *
+    SELECT 
+    tourney_id,
+    tourney_name, 
+    surface, 
+    tourney_level,
+    best_of,
+    tourney_date,
+    draw_size 
     FROM {{ source('atp', 'matches') }}
     WHERE {{ filtrado_copa_davis('tourney_level')}}
 ),
