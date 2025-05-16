@@ -1,3 +1,5 @@
+{{ config(materialized='table') }}
+
 WITH raw_matches AS (
     SELECT *
     FROM {{ source('atp', 'matches') }}

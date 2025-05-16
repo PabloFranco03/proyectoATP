@@ -1,10 +1,12 @@
+{{ config(materialized='table') }}
+
 WITH raw_matches AS (
     SELECT *
     FROM {{ source('atp', 'matches') }}
 )
 
 SELECT DISTINCT
-    {{ dbt_utils.generate_surrogate_key(['surface']) }} AS id_superficie,
+    {{ dbt_utils.generate_surrogate_key([limpiar_texto("surface")]) }} AS id_superficie,
     surface AS superficie,
 
     CASE surface

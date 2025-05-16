@@ -1,3 +1,4 @@
+{{ config(materialized='table') }}
 
 WITH raw_matches AS (
     SELECT *

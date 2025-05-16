@@ -1,7 +1,3 @@
-{{ config(
-    materialized = 'table'
-) }}
-
 WITH jugadores AS (
     SELECT * 
     FROM {{ ref('stg_atp_db__jugadores') }}
@@ -18,7 +14,8 @@ renamed_casted AS (
             WHEN mano_dominante = 'U' THEN 'Desconocido'
         END AS mano_desc,
         altura_cm,
-        cod_pais
+        cod_pais,
+        pais_desc
     FROM jugadores
 )
 

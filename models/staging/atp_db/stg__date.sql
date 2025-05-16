@@ -18,10 +18,10 @@ SELECT
     EXTRACT(DAY FROM date_day) AS dia,
     EXTRACT(DAYOFWEEK FROM date_day) AS dia_semana,
     TRIM(TO_CHAR(date_day, 'MMMM')) AS mes_nombre,
-    TRIM(TO_CHAR(date_day, 'DY')) AS dia_nombre,
-    CASE 
-        WHEN date_day <= CURRENT_DATE THEN TRUE
-        ELSE FALSE
-    END AS es_pasado
+    TRIM(TO_CHAR(date_day, 'DY')) AS dia_nombre
+    --CASE 
+    --    WHEN date_day <= CURRENT_DATE THEN TRUE
+    --    ELSE FALSE
+    --END AS es_pasado
 FROM date_spine
 ORDER BY date_day

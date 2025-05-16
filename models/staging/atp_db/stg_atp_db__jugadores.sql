@@ -34,7 +34,7 @@ jugadores_union AS (
 
 registro_vacio AS (
     SELECT
-        -1 AS id_jugador,  -- valor numérico fijo
+        -1 AS id_jugador, 
         'Desconocido' AS nombre_jugador,
         NULL AS mano_dominante,
         NULL AS altura_cm,

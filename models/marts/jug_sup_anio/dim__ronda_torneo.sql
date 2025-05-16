@@ -1,10 +1,10 @@
-WITH superficie AS (
+WITH ronda_torneo AS (
     SELECT *
-    FROM {{ ref('stg__nivel_torneo') }}
+    FROM {{ ref('stg_atp_db__ronda_torneo') }}
 )
 
 SELECT
-    id_nivel_torneo,
-    nivel_torneo,
-    nivel_torneo_desc
-FROM superficie
+    id_ronda_torneo,
+    ronda_torneo,
+    ronda_torneo_desc
+FROM ronda_torneo

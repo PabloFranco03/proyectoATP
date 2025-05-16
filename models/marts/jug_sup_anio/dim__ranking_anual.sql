@@ -1,7 +1,3 @@
-{{ config(
-    materialized = 'table'
-) }}
-
 WITH ranking_anual AS (
     SELECT * 
     FROM {{ ref('stg_atp_db__ranking_anual') }}

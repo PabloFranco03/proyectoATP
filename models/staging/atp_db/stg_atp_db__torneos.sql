@@ -1,3 +1,5 @@
+-- {{ config(materialized='table') }}
+
 WITH torneo_base AS (
     SELECT *
     FROM {{ ref('base_atp_db__torneos') }}

@@ -1,6 +1,6 @@
 WITH superficie AS (
     SELECT *
-    FROM {{ ref('stg__superficie') }}
+    FROM {{ ref('stg_atp_db__superficie') }}
 )
 
 SELECT
