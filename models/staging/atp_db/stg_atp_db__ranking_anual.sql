@@ -1,12 +1,13 @@
 WITH source AS (
     SELECT *
     FROM {{ source('atp', 'matches') }}
-    WHERE {{ es_torneo_principal('tourney_level') }}
+    WHERE {{ filtrado_copa_davis('tourney_level') }}
+
 ),
 
 ganadores AS (
     SELECT
-        {{ dbt_utils.generate_surrogate_key(['winner_id']) }} AS id_jugador,
+        winner_id AS id_jugador,
         winner_rank_points AS puntos,
         winner_age AS edad,
         TO_DATE(TO_VARCHAR(tourney_date), 'YYYYMMDD') AS fecha
@@ -15,7 +16,7 @@ ganadores AS (
 
 perdedores AS (
     SELECT
-        {{ dbt_utils.generate_surrogate_key(['loser_id']) }} AS id_jugador,
+        loser_id AS id_jugador,
         loser_rank_points AS puntos,
         loser_age AS edad,
         TO_DATE(TO_VARCHAR(tourney_date), 'YYYYMMDD') AS fecha
@@ -48,7 +49,7 @@ ultimos_partidos AS (
 ranking_recalculado AS (
     SELECT
         {{ dbt_utils.generate_surrogate_key(['id_jugador','anio']) }} AS id_ranking,
-        id_jugador,
+        {{ dbt_utils.generate_surrogate_key(['id_jugador']) }} AS id_jugador,
         RANK() OVER (PARTITION BY anio ORDER BY puntos DESC) AS ranking_final,
         puntos AS puntos_finales,
         anio,

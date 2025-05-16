@@ -1,7 +1,9 @@
+{{ config(materialized='view') }}
+
 WITH source AS (
     SELECT *
     FROM {{ source('atp', 'matches') }}
-    WHERE {{ es_torneo_principal('tourney_level') }}
+    WHERE {{ filtrado_copa_davis('tourney_level') }}
 ),
 
 ganadores AS (
@@ -32,11 +34,22 @@ jugadores_union AS (
 
 registro_vacio AS (
     SELECT
-        NULL AS id_jugador,
+        -1 AS id_jugador,  -- valor numérico fijo
         'Desconocido' AS nombre_jugador,
         NULL AS mano_dominante,
         NULL AS altura_cm,
         NULL AS cod_pais
+),
+
+ioc_paises AS (
+    SELECT *
+    FROM {{ ref('paises_ioc') }}
+),
+
+union_total AS (
+    SELECT * FROM jugadores_union
+    UNION ALL
+    SELECT * FROM registro_vacio
 )
 
 SELECT
@@ -44,15 +57,8 @@ SELECT
     nombre_jugador,
     mano_dominante,
     altura_cm,
-    cod_pais
-FROM jugadores_union
-
-UNION ALL
-
-SELECT
-    {{ dbt_utils.generate_surrogate_key(['id_jugador']) }} AS id_jugador_hash,
-    nombre_jugador,
-    mano_dominante,
-    altura_cm,
-    cod_pais
-FROM registro_vacio
+    cod_pais,
+    p.pais_completo as pais_desc
+FROM union_total j
+LEFT JOIN ioc_paises p
+    ON j.cod_pais = p.cod_ioc

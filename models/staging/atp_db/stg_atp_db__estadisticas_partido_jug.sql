@@ -1,14 +1,10 @@
-/*{{ config(
-    materialized = 'incremental',
-    unique_key = 'id_partido'
-) }}*/
+-- HACER INCREMENTAL
 
 WITH source AS (
     SELECT *
     FROM {{ source('atp', 'matches') }}
-    WHERE {{ es_torneo_principal('tourney_level') }}
     /*{% if is_incremental() %}
-    AND TO_DATE(tourney_date, 'YYYYMMDD') >= (
+    WHERE TO_DATE(tourney_date, 'YYYYMMDD') >= (
         SELECT MAX(TO_DATE(tourney_date, 'YYYYMMDD')) FROM {{ this }}
     )
     {% endif %}*/
@@ -16,7 +12,7 @@ WITH source AS (
 
 ganador AS (
     SELECT
-        {{ dbt_utils.generate_surrogate_key(['tourney_id', 'match_num']) }} AS id_partido,
+        {{ dbt_utils.generate_surrogate_key(['tourney_id', 'match_num', 'winner_id']) }} AS id_partido,
         {{ dbt_utils.generate_surrogate_key(['winner_id']) }} AS id_jugador,
         TRUE AS ha_ganado,
         w_ace AS ace,
@@ -33,7 +29,7 @@ ganador AS (
 
 perdedor AS (
     SELECT
-        {{ dbt_utils.generate_surrogate_key(['tourney_id', 'match_num']) }} AS id_partido,
+        {{ dbt_utils.generate_surrogate_key(['tourney_id', 'match_num', 'loser_id']) }} AS id_partido,
         {{ dbt_utils.generate_surrogate_key(['loser_id']) }} AS id_jugador,
         FALSE AS ha_ganado,
         l_ace AS ace,
@@ -52,7 +48,9 @@ estadisticas_union AS (
     SELECT * FROM ganador
     UNION ALL
     SELECT * FROM perdedor
-),
+)
 
-SELECT * FROM estadisticas_union
+SELECT 
+    *
+FROM estadisticas_union
 

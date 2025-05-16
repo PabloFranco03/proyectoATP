@@ -1,19 +1,18 @@
 WITH raw_matches AS (
     SELECT *
+    -- tourney_name
     FROM {{ source('atp', 'matches') }}
-    WHERE {{ es_torneo_principal('tourney_level') }}
+    WHERE {{ filtrado_copa_davis('tourney_level')}}
 ),
 
 campos_torneo AS (
     SELECT
-        {{ dbt_utils.generate_surrogate_key(['tourney_name']) }} as id_torneo,
-        tourney_name AS nombre
-        --surface AS superficie,
-        --tourney_level AS nivel,
-        --best_of AS sets_maximos
+        {{ dbt_utils.generate_surrogate_key([limpiar_texto("tourney_name")]) }} AS id_torneo,
+        tourney_name AS nombre,
     FROM raw_matches
 )
 
 SELECT DISTINCT *
 FROM campos_torneo
+order by nombre
 

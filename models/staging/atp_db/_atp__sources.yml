@@ -31,6 +31,7 @@ sources:
           - name: surface
             description: "Tipo de superficie: Clay, Hard, Grass..."
             tests:
+              #- not_null
               - accepted_values:
                   values: ['Hard', 'Clay', 'Grass']
 
@@ -39,11 +40,13 @@ sources:
             tests:
               - dbt_expectations.expect_column_values_to_be_between:
                   min_value: 8
+                  max_value: 256
                   severity: warn
 
           - name: tourney_level
             description: "Nivel del torneo (G: Grand Slam, M: Masters 1000, A: ATP 500, D: Davis Cup, F: Finals, O: Olympics)."
             tests:
+              - not_null
               - accepted_values:
                   values: ['G', 'M', 'A', 'D', 'F', 'O']
 
@@ -82,6 +85,7 @@ sources:
             tests:
               - dbt_expectations.expect_column_values_to_be_between:
                   min_value: 140
+                  max_value: 220
                   severity: warn
 
           - name: winner_ioc
@@ -92,6 +96,8 @@ sources:
             tests:
               - dbt_expectations.expect_column_values_to_be_between:
                   min_value: 15
+                  max_value: 45
+                  severity: warn
 
           - name: loser_id
             description: "ID del jugador que perdió el partido."
@@ -120,6 +126,7 @@ sources:
             tests:
               - dbt_expectations.expect_column_values_to_be_between:
                   min_value: 140
+                  max_value: 220
                   severity: warn
 
           - name: loser_ioc
@@ -130,6 +137,8 @@ sources:
             tests:
               - dbt_expectations.expect_column_values_to_be_between:
                   min_value: 15
+                  max_value: 45
+                  severity: warn
 
           - name: score
             description: "Resultado del partido (ej: 6-3 4-6 7-6)."
@@ -143,6 +152,7 @@ sources:
           - name: round
             description: "Ronda del torneo (ej: F, SF, QF, R16, etc)."
             tests:
+              - not_null
               - accepted_values:
                   values: ['F', 'SF', 'QF', 'R16', 'R32', 'RR', 'R128', 'R64', 'BR']
 
@@ -281,4 +291,3 @@ sources:
 
           - name: loser_rank_points
             description: "Puntos ATP del perdedor en ese momento."
-
