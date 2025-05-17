@@ -18,7 +18,7 @@ models:
           - not_null
 
       - name: id_superficie
-        description: "Clave surrogate de la superficie (Hard, Clay, Grass) con limpieza aplicada."
+        description: "Clave surrogate de la superficie (Hard, Clay, Grass, Carpet) con limpieza aplicada."
         tests:
           - not_null
 
@@ -26,13 +26,6 @@ models:
         description: "Clave surrogate del nivel del torneo (G, M, A, etc.)."
         tests:
           - not_null
-
-      - name: sets_maximos
-        description: "Cantidad máxima de sets por partido en el torneo (3 o 5)."
-        tests:
-          - not_null
-          - accepted_values:
-              values: [3, 5]
 
       - name: fecha_inicio
         description: "Fecha de inicio del torneo en formato DATE, derivada de `tourney_date`."

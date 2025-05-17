@@ -14,12 +14,14 @@ SELECT DISTINCT
         WHEN 'Clay' THEN 'Tierra batida'
         WHEN 'Hard' THEN 'Dura'
         WHEN 'Grass' THEN 'Hierba'
+        WHEN 'Carpet' THEN 'Moqueta'
         ELSE 'Desconocida'
     END AS nombre_superficie,
 
     CASE surface
         WHEN 'Hard' THEN TRUE
         WHEN 'Grass' THEN TRUE
+        WHEN 'Carpet' THEN TRUE
         WHEN 'Clay' THEN FALSE
         ELSE NULL
     END AS es_rapida

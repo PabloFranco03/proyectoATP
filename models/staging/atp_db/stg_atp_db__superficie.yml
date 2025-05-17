@@ -12,18 +12,18 @@ models:
           - unique
 
       - name: superficie
-        description: "Nombre original de la superficie ('Clay', 'Hard', 'Grass') tal como aparece en la fuente."
+        description: "Nombre original de la superficie ('Clay', 'Hard', 'Grass', 'Carpet') tal como aparece en la fuente."
         tests:
           - not_null
           - accepted_values:
-              values: ['Hard', 'Clay', 'Grass']
+              values: ['Hard', 'Clay', 'Grass', 'Carpet']
 
       - name: nombre_superficie
         description: "Nombre descriptivo de la superficie en castellano ('Tierra batida', 'Dura', 'Hierba')."
         tests:
           - not_null
           - accepted_values:
-              values: ['Tierra batida', 'Dura', 'Hierba']
+              values: ['Tierra batida', 'Dura', 'Hierba', 'Moqueta']
 
       - name: es_rapida
         description: "Indica si la superficie es considerada rápida (TRUE para 'Hard' y 'Grass', FALSE para 'Clay')."

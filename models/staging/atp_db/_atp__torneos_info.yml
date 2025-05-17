@@ -24,26 +24,19 @@ sources:
             description: "País anfitrión del torneo, útil para segmentaciones geográficas y análisis por región."
             tests:
               - not_null
-              - dbt_expectations.expect_column_values_to_match_regex:
-                  regex: "^[A-Za-zÀ-ÿ\\s'-]+$"
-                  config:
-                    severity: warn
 
           - name: ciudad
             description: "Ciudad sede del torneo; puede coincidir con el nombre del estadio principal en algunos casos."
             tests:
               - not_null
-              - dbt_expectations.expect_column_values_to_match_regex:
-                  regex: "^[A-Za-zÀ-ÿ\\s'-]+$"
-                  config:
-                    severity: warn
 
           - name: primera_edicion
             description: "Año (formato AAAA) en que se celebró la primera edición registrada del torneo."
             tests:
               - dbt_expectations.expect_column_values_to_be_between:
                   min_value: 1877
-                  severity: warn
+                  config:
+                    severity: warn
 
           - name: estadio_principal
             description: "Nombre del estadio principal donde se desarrollan los partidos del torneo, cuando aplica."

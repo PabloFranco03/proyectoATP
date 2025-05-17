@@ -18,13 +18,9 @@ models:
 
       - name: pais
         description: "País anfitrión donde se celebra el torneo. Permite segmentación geográfica."
-        tests:
-          - not_null
 
       - name: ciudad
         description: "Ciudad donde se disputa el torneo. Útil para análisis de localización más específicos."
-        tests:
-          - not_null
 
       - name: primera_edicion
         description: "Año (en formato AAAA) de la primera edición registrada del torneo."

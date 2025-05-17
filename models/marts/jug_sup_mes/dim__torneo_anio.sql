@@ -8,7 +8,6 @@ select
     id_torneo,
     id_superficie,
     id_nivel_torneo,        
-    sets_maximos, 
     fecha_inicio,
     anio_inicio,
     mes_inicio,

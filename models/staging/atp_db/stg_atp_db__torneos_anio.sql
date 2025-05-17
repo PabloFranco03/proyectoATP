@@ -4,7 +4,6 @@ WITH raw_matches AS (
     tourney_name, 
     surface, 
     tourney_level,
-    best_of,
     tourney_date,
     draw_size 
     FROM {{ source('atp', 'matches') }}
@@ -18,7 +17,6 @@ campos_torneo_anio AS (
         {{ dbt_utils.generate_surrogate_key([limpiar_texto("surface")]) }} AS id_superficie,
         -- añadir el limpiar texto
         {{ dbt_utils.generate_surrogate_key(['tourney_level']) }} AS id_nivel_torneo,        
-        best_of AS sets_maximos, 
         TO_DATE(tourney_date, 'YYYYMMDD') AS fecha_inicio,
         CAST(TO_CHAR(TO_DATE(tourney_date, 'YYYYMMDD'), 'YYYY') AS INT) AS anio_inicio,
         CAST(TO_CHAR(TO_DATE(tourney_date, 'YYYYMMDD'), 'MM') AS INT) AS mes_inicio,

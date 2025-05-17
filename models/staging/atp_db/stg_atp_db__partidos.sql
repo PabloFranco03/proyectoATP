@@ -1,17 +1,14 @@
-/*{{ config(
-    materialized = 'incremental',
-    unique_key = 'id_partido'
-) }}*/
-
-WITH source AS (
-    SELECT *
-    FROM {{ source('atp', 'matches') }}
-    WHERE {{ filtrado_copa_davis('tourney_level') }}
-    /*{% if is_incremental() %}
-    WHERE TO_DATE(tourney_date, 'YYYYMMDD') >= (
-        SELECT MAX(TO_DATE(tourney_date, 'YYYYMMDD')) FROM {{ this }}
+{{
+    config(
+        materialized='incremental',
+        unique_key='id_partido'
     )
-    {% endif %}*/
+}}
+
+with source as (
+    select *
+    from {{ source('atp', 'matches') }}
+    where {{ filtrado_copa_davis('tourney_level') }}
 ),
 
 partidos AS (
@@ -23,6 +20,7 @@ partidos AS (
         {{ dbt_utils.generate_surrogate_key(['loser_id']) }} AS id_perdedor,
         minutes AS duracion_minutos,
         score AS resultado,
+        best_of as sets_maximos,
         -- Número de sets jugados (coincidencias tipo 6-4, 7-6, etc.)
         --REGEXP_COUNT(score, '\\d+-\\d+') AS sets_jugados,
         -- Sets ganados por el ganador
@@ -38,8 +36,15 @@ partidos AS (
         --END AS fue_tiebreak_final,
         -- Resultado normalizado: separa sets con barra
         --REPLACE(score, ' ', ' / ') AS resultado_normalizado,
-        match_num AS numero_partido_torneo
+        match_num AS numero_partido_torneo,
+        ingesta_tmz
     FROM source
+    {% if is_incremental() %}
+            where ingesta_tmz > (select max(ingesta_tmz) from {{ this }})
+    {% endif %} 
 )
 
 SELECT * FROM partidos
+
+
+

@@ -31,10 +31,10 @@ sources:
               - not_null
 
           - name: surface
-            description: "Tipo de superficie del torneo: Hard, Clay o Grass. Algunas filas pueden estar vacías si la información no fue registrada."
+            description: "Tipo de superficie del torneo: Hard, Clay, Grass o Carpet. Algunas filas pueden estar vacías si la información no fue registrada."
             tests:
               - accepted_values:
-                  values: ['Hard', 'Clay', 'Grass']
+                  values: ['Hard', 'Clay', 'Grass', 'Carpet']
               # Nota: not_null desactivado por presencia esperada de nulos en datos históricos
 
           - name: draw_size
