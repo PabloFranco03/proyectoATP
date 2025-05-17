@@ -1,4 +1,6 @@
 {{ config(materialized='table') }}
+-- cómo hago la tabla incremental si dependo de posibles campos distintos de ingested_tmz?
+
 
 WITH partidos AS (
     SELECT

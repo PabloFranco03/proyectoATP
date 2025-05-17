@@ -1,8 +1,6 @@
-version: 2
-
 models:
   - name: stg_date
-    description: "Dimensión de fechas desde 2021 hasta 2024 para análisis temporal y modelado en GOLD."
+    description: "Dimensión de fechas desde 2000 hasta 2030 para análisis temporal y modelado en GOLD."
     columns:
       - name: date
         description: "Fecha completa. Clave primaria de la dimensión."

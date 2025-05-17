@@ -13,7 +13,6 @@ dim_fecha AS (
         dia_semana,
         mes_nombre,
         dia_nombre
-        --es_pasado
     FROM stg_fecha
 
 )

@@ -1,0 +1,42 @@
+models:
+  - name: dim__jugadores
+    description: >
+      Dimensión de jugadores de tenis. Incluye nombre, nacionalidad, altura y mano dominante,
+      con una versión descriptiva ('mano_desc') para facilitar la interpretación en reporting.
+
+    columns:
+      - name: id_jugador
+        description: Identificador único del jugador, utilizado como clave foránea en modelos de hechos.
+        tests:
+          - not_null
+          - unique
+
+      - name: nombre_jugador
+        description: Nombre completo del jugador.
+        tests:
+          - not_null
+
+      - name: mano_dominante
+        description: Código de mano dominante ('R' = Diestro, 'L' = Zurdo, 'U' = Desconocido).
+        tests:
+          - accepted_values:
+              values: ['R', 'L', 'U']
+
+      - name: mano_desc
+        description: Descripción legible de la mano dominante ('Diestro', 'Zurdo', 'Desconocido').
+        tests:
+          - accepted_values:
+              values: ['Diestro', 'Zurdo', 'Desconocido']
+
+      - name: altura_cm
+        description: Altura del jugador en centímetros.
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 140
+              max_value: 220
+
+      - name: cod_pais
+        description: Código ISO del país del jugador (por ejemplo, 'ESP', 'ARG').
+
+      - name: pais_desc
+        description: Nombre completo del país de nacionalidad del jugador.

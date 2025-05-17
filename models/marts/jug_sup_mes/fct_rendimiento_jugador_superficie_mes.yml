@@ -1,0 +1,101 @@
+models:
+  - name: fct_rendimiento_jugador_superficie_mes
+    description: >
+      Tabla de hechos que resume el rendimiento mensual de cada jugador por superficie. 
+      Agrega KPIs clave como ratio de victorias, efectividad de saque y puntos de break,
+      a partir de los partidos disputados. Se construye sobre estadísticas individuales por partido.
+
+    columns:
+      - name: id_jugador
+        description: Identificador del jugador.
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim__jugadores')
+              field: id_jugador
+
+      - name: id_superficie
+        description: Identificador de la superficie donde se disputaron los partidos.
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim__superficie')
+              field: id_superficie
+
+      - name: anio
+        description: Año del rendimiento agregado.
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 1900
+              max_value: 2100
+
+      - name: mes
+        description: Mes del rendimiento agregado (valor entre 1 y 12).
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 1
+              max_value: 12
+
+      - name: partidos_jugados
+        description: Total de partidos jugados por el jugador en ese mes y superficie.
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 1
+
+      - name: victorias
+        description: Total de partidos ganados por el jugador.
+        tests:
+          - not_null
+
+      - name: ratio_victorias
+        description: Proporción de victorias sobre el total de partidos jugados (0 a 1).
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 1
+
+      - name: aces_totales
+        description: Total de aces realizados en el periodo.
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: aces_promedio
+        description: Promedio de aces por partido en el periodo.
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: dobles_faltas_totales
+        description: Total de dobles faltas cometidas.
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: dobles_faltas_promedio
+        description: Promedio de dobles faltas por partido.
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: puntos_saque_totales
+        description: Total de puntos jugados con el servicio.
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: primeros_saques_totales
+        description: Total de primeros saques acertados.
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+
+      - name: ratio_1er_saques_dentro
+        description: Proporción de primeros saques que entraron respecto a puntos de saque.
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0

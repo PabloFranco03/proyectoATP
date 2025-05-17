@@ -1,0 +1,60 @@
+version: 2
+
+models:
+  - name: dim__torneo_anio
+    description: >
+      Dimensión de torneos por año. Cada fila representa una edición específica de un torneo
+      con su contexto temporal, superficie y nivel competitivo. Esta dimensión es clave para
+      analizar hechos relacionados con una edición concreta de torneo.
+
+    columns:
+      - name: id_torneo_anio
+        description: Identificador único de la edición del torneo en un año específico.
+        tests:
+          - not_null
+          - unique
+
+      - name: id_torneo
+        description: Identificador del torneo base (sin componente anual).
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim__torneos')
+              field: id_torneo
+
+      - name: id_superficie
+        description: Superficie en la que se jugó el torneo (duro, arcilla, césped, etc.).
+        tests:
+          - not_null
+
+      - name: id_nivel_torneo
+        description: Categoría del torneo (ej. Grand Slam, ATP 1000, ATP 500...).
+        tests:
+          - not_null
+
+      - name: fecha_inicio
+        description: Fecha exacta de inicio de la edición del torneo.
+        tests:
+          - not_null
+
+      - name: anio_inicio
+        description: Año de inicio del torneo (extraído de la fecha).
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 1900
+              max_value: 2100
+
+      - name: mes_inicio
+        description: Mes numérico en el que comenzó el torneo.
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 1
+              max_value: 12
+
+      - name: total_jugadores
+        description: Cantidad de jugadores inscritos en la edición del torneo.
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 2
+              max_value: 256  
