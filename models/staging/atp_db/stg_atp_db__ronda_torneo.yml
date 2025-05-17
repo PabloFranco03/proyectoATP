@@ -1,0 +1,24 @@
+models:
+  - name: stg_atp_db__ronda_torneo
+    description: >
+      Modelo de stage que construye una dimensión de rondas de torneo a partir de los datos de partidos ATP.
+      Incluye un ID surrogate, la abreviatura original y una descripción legible en castellano.
+
+    columns:
+      - name: id_ronda_torneo
+        description: "Clave surrogate generada a partir del código de ronda ('round'). Identificador único por tipo de ronda."
+        tests:
+          - not_null
+          - unique
+
+      - name: ronda_torneo
+        description: "Código de ronda tal como aparece en la fuente (ej: F, SF, QF, R32, etc.)."
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['F', 'SF', 'QF', 'R16', 'R32', 'R64', 'R128', 'RR', 'BR']
+
+      - name: ronda_torneo_desc
+        description: "Descripción de la ronda en castellano (ej: Final, Semifinal, etc.)."
+        tests:
+          - not_null

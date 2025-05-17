@@ -1,0 +1,259 @@
+sources:
+  - name: atp
+    database: ALUMNO26_DEV_BRONZE_DB_ATP
+    schema: ATP_DB
+    description: "Datos brutos de partidos del circuito ATP."
+
+    quoting:
+      database: false
+      schema: false
+      identifier: false
+
+    #freshness:
+      #warn_after: {count: 24, period: hour}
+      #error_after: {count: 48, period: hour}
+
+    tables:
+      - name: matches
+        description: "Partidos oficiales ATP. Una fila por partido individual del cuadro principal."
+
+        #loaded_at_field: ingestion_timestamp
+
+        columns:
+          - name: tourney_id
+            description: "Identificador único del torneo según base ATP."
+            tests:
+              - not_null
+
+          - name: tourney_name
+            description: "Nombre oficial del torneo según nomenclatura ATP, útil para trazabilidad y análisis agregados."
+            tests:
+              - not_null
+
+          - name: surface
+            description: "Tipo de superficie del torneo: Hard, Clay, Grass o Carpet. Algunas filas pueden estar vacías si la información no fue registrada."
+            tests:
+              - accepted_values:
+                  values: ['Hard', 'Clay', 'Grass', 'Carpet']
+              # Nota: not_null desactivado por presencia esperada de nulos en datos históricos
+
+          - name: draw_size
+            description: "Tamaño del cuadro principal de jugadores (entre 8 y 256)."
+            tests:
+              - dbt_expectations.expect_column_values_to_be_between:
+                  min_value: 8
+                  max_value: 256
+                  severity: warn
+
+          - name: tourney_level
+            description: "Categoría del torneo: G (Grand Slam), M (Masters 1000), A (Torneos ATP), D (Davis Cup), F (Finals), O (Olympics)."
+            tests:
+              - not_null
+              - accepted_values:
+                  values: ['G', 'M', 'A', 'D', 'F', 'O']
+
+          - name: tourney_date
+            description: "Fecha de inicio del torneo en formato YYYYMMDD."
+            tests:
+              - not_null
+
+          - name: match_num
+            description: "Número secuencial del partido dentro del torneo. Ayuda a identificar y ordenar partidos."
+            tests:
+              - not_null
+
+          - name: winner_id
+            description: "ID único del jugador que ganó el partido."
+            tests:
+              - not_null
+
+          - name: winner_entry
+            description: "Tipo de entrada del ganador al cuadro (WC: wildcard, Q: qualifier, LL: lucky loser, etc.)."
+
+          - name: winner_name
+            description: "Nombre completo del jugador ganador."
+            tests:
+              - not_null
+
+          - name: winner_hand
+            description: "Mano dominante del jugador (R: derecha, L: izquierda, U: desconocida)."
+            tests:
+              - accepted_values:
+                  values: ['L', 'R', 'U']
+
+          - name: winner_ht
+            description: "Altura del jugador ganador en centímetros."
+            tests:
+              - dbt_expectations.expect_column_values_to_be_between:
+                  min_value: 140
+                  max_value: 220
+                  severity: warn
+
+          - name: winner_ioc
+            description: "Código de país (IOC) del jugador ganador. Ej: 'ESP', 'USA'."
+            tests:
+              - dbt_expectations.expect_column_values_to_match_regex:
+                  regex: "^[A-Z]{3}$"
+                  config:
+                    severity: warn
+
+          - name: winner_age
+            description: "Edad del jugador ganador en el momento del partido."
+            tests:
+              - dbt_expectations.expect_column_values_to_be_between:
+                  min_value: 15
+                  max_value: 45
+                  severity: warn
+
+          - name: loser_id
+            description: "ID único del jugador que perdió el partido."
+            tests:
+              - not_null
+
+          - name: loser_entry
+            description: "Tipo de entrada del perdedor al cuadro."
+
+          - name: loser_name
+            description: "Nombre completo del jugador perdedor."
+            tests:
+              - not_null
+
+          - name: loser_hand
+            description: "Mano dominante del jugador perdedor."
+            tests:
+              - accepted_values:
+                  values: ['L', 'R', 'U']
+
+          - name: loser_ht
+            description: "Altura del perdedor en cm."
+            tests:
+              - dbt_expectations.expect_column_values_to_be_between:
+                  min_value: 140
+                  max_value: 220
+                  severity: warn
+
+          - name: loser_ioc
+            description: "Código de país (IOC) del perdedor."
+            tests:
+              - dbt_expectations.expect_column_values_to_match_regex:
+                  regex: "^[A-Z]{3}$"
+                  config:
+                    severity: warn
+
+          - name: loser_age
+            description: "Edad del jugador perdedor en el momento del partido."
+            tests:
+              - dbt_expectations.expect_column_values_to_be_between:
+                  min_value: 15
+                  max_value: 45
+                  severity: warn
+
+          - name: score
+            description: "Marcador final del partido. Ej: '6-3 4-6 7-6'."
+
+          - name: best_of
+            description: "Número máximo de sets jugables en el torneo: 3 o 5."
+            tests:
+              - accepted_values:
+                  values: [3, 5]
+
+          - name: round
+            description: "Ronda del torneo. Ej: F (final), SF (semifinal), R32 (primera ronda), etc."
+            tests:
+              - not_null
+              - accepted_values:
+                  values: ['F', 'SF', 'QF', 'R16', 'R32', 'RR', 'R128', 'R64', 'BR']
+
+          - name: minutes
+            description: "Duración total del partido en minutos."
+            tests:
+              - dbt_expectations.expect_column_values_to_be_between:
+                  min_value: 10
+                  severity: warn
+
+          # Estadísticas del ganador y perdedor — test min_value: 0 se mantiene igual
+          - name: w_ace
+            description: "Cantidad de aces del ganador."
+            tests: [{ dbt_expectations.expect_column_values_to_be_between: {min_value: 0} }]
+
+          - name: w_df
+            description: "Dobles faltas del ganador."
+            tests: [{ dbt_expectations.expect_column_values_to_be_between: {min_value: 0} }]
+
+          - name: w_svpt
+            description: "Puntos al saque del ganador."
+            tests: [{ dbt_expectations.expect_column_values_to_be_between: {min_value: 0} }]
+
+          - name: w_1stIn
+            description: "Primeros servicios dentro del ganador."
+            tests: [{ dbt_expectations.expect_column_values_to_be_between: {min_value: 0} }]
+
+          - name: w_1stWon
+            description: "Puntos ganados con el primer saque."
+            tests: [{ dbt_expectations.expect_column_values_to_be_between: {min_value: 0} }]
+
+          - name: w_2ndWon
+            description: "Puntos ganados con el segundo saque."
+            tests: [{ dbt_expectations.expect_column_values_to_be_between: {min_value: 0} }]
+
+          - name: w_SvGms
+            description: "Juegos al saque del ganador."
+            tests: [{ dbt_expectations.expect_column_values_to_be_between: {min_value: 0} }]
+
+          - name: w_bpSaved
+            description: "Break points salvados por el ganador."
+            tests: [{ dbt_expectations.expect_column_values_to_be_between: {min_value: 0} }]
+
+          - name: w_bpFaced
+            description: "Break points enfrentados por el ganador."
+            tests: [{ dbt_expectations.expect_column_values_to_be_between: {min_value: 0} }]
+
+          - name: l_ace
+            description: "Aces del perdedor."
+            tests: [{ dbt_expectations.expect_column_values_to_be_between: {min_value: 0} }]
+
+          - name: l_df
+            description: "Dobles faltas del perdedor."
+            tests: [{ dbt_expectations.expect_column_values_to_be_between: {min_value: 0} }]
+
+          - name: l_svpt
+            description: "Puntos al saque del perdedor."
+            tests: [{ dbt_expectations.expect_column_values_to_be_between: {min_value: 0} }]
+
+          - name: l_1stIn
+            description: "Primeros servicios dentro del perdedor."
+            tests: [{ dbt_expectations.expect_column_values_to_be_between: {min_value: 0} }]
+
+          - name: l_1stWon
+            description: "Puntos ganados con el primer saque del perdedor."
+            tests: [{ dbt_expectations.expect_column_values_to_be_between: {min_value: 0} }]
+
+          - name: l_2ndWon
+            description: "Puntos ganados con el segundo saque del perdedor."
+            tests: [{ dbt_expectations.expect_column_values_to_be_between: {min_value: 0} }]
+
+          - name: l_SvGms
+            description: "Juegos al saque del perdedor."
+            tests: [{ dbt_expectations.expect_column_values_to_be_between: {min_value: 0} }]
+
+          - name: l_bpSaved
+            description: "Break points salvados por el perdedor."
+            tests: [{ dbt_expectations.expect_column_values_to_be_between: {min_value: 0} }]
+
+          - name: l_bpFaced
+            description: "Break points enfrentados por el perdedor."
+            tests: [{ dbt_expectations.expect_column_values_to_be_between: {min_value: 0} }]
+
+          - name: winner_rank
+            description: "Ranking del jugador ganador en la fecha del partido."
+            tests: [{ dbt_expectations.expect_column_values_to_be_between: {min_value: 1} }]
+
+          - name: winner_rank_points
+            description: "Cantidad de puntos ATP del ganador al momento del partido."
+
+          - name: loser_rank
+            description: "Ranking del perdedor en la fecha del partido."
+            tests: [{ dbt_expectations.expect_column_values_to_be_between: {min_value: 1} }]
+
+          - name: loser_rank_points
+            description: "Cantidad de puntos ATP del perdedor al momento del partido."

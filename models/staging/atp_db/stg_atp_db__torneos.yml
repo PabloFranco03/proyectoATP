@@ -1,0 +1,33 @@
+models:
+  - name: stg_atp_db__torneos
+    description: >
+      Modelo de stage que combina la información básica de torneos ATP con datos geográficos e históricos
+      provenientes de la tabla `torneos_info`. Estándar para capas analíticas posteriores.
+
+    columns:
+      - name: id_torneo
+        description: "Identificador único del torneo, generado como surrogate key. Utilizado para integraciones y joins posteriores."
+        tests:
+          - not_null
+          - unique
+
+      - name: nombre
+        description: "Nombre oficial del torneo, utilizado como clave natural para trazabilidad y visualizaciones."
+        tests:
+          - not_null
+
+      - name: pais
+        description: "País anfitrión donde se celebra el torneo. Permite segmentación geográfica."
+
+      - name: ciudad
+        description: "Ciudad donde se disputa el torneo. Útil para análisis de localización más específicos."
+
+      - name: primera_edicion
+        description: "Año (en formato AAAA) de la primera edición registrada del torneo."
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 1877
+              severity: warn
+
+      - name: estadio_principal
+        description: "Estadio principal donde se juegan los partidos del torneo, cuando aplica."

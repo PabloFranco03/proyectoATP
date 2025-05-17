@@ -1,0 +1,54 @@
+version: 2
+
+models:
+  - name: stg_atp_db__ranking_anual
+    description: >
+      Modelo que calcula el ranking anual final de cada jugador sin contar la Copa Davis,
+      utilizando su último partido en el año como referencia.
+      Se considera la puntuación ('rank_points') más reciente disponible por jugador y año.
+
+    columns:
+      - name: id_ranking
+        description: Identificador único del registro de ranking por jugador y año.
+        tests:
+          - not_null
+          - unique
+
+      - name: id_jugador
+        description: Identificador hash del jugador.
+        tests:
+          - not_null
+
+      - name: ranking_final
+        description: Posición final del jugador en el ranking de ese año, calculada por puntos.
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 1
+
+      - name: puntos_finales
+        description: Puntos de ranking obtenidos por el jugador al final del año.
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: anio
+        description: Año en el que se calcula el ranking.
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 1900
+              max_value: 2100
+
+      - name: edad
+        description: Edad del jugador en el momento de su último partido del año.
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 15
+              max_value: 45
+
+      - name: fecha
+        description: Fecha del último partido del jugador en el año, usada como referencia para el snapshot.
+        tests:
+          - not_null

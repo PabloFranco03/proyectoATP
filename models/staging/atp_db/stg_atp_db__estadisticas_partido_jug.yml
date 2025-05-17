@@ -1,0 +1,92 @@
+models:
+  - name: stg_atp_db__partidos_estadisticas
+    description: >
+      Modelo incremental que unifica estadísticas de rendimiento por jugador y partido.
+      Integra datos del ganador y del perdedor desde 'atp.matches',
+      permitiendo análisis comparativos entre ambos jugadores.
+
+    columns:
+      - name: id_partido_estadisticas
+        description: ID único de la estadística, generado a partir de 'tourney_id', 'match_num' y el jugador.
+        tests:
+          - not_null
+          - unique
+
+      - name: id_partido
+        description: Identificador del partido, común entre ganador y perdedor. Derivado de 'tourney_id' y 'match_num'.
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_atp_db__partidos')
+              field: id_partido
+
+      - name: id_jugador
+        description: Identificador hash del jugador (ganador o perdedor) en el partido.
+        tests:
+          - not_null
+
+      - name: ha_ganado
+        description: Indicador booleano de si el jugador ganó el partido.
+        tests:
+          - not_null
+          - accepted_values:
+              values: [true, false]
+
+      - name: ace
+        description: Número de saques directos realizados por el jugador.
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: doble_falta
+        description: Número de dobles faltas cometidas por el jugador.
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: puntos_saque
+        description: Total de puntos jugados con el servicio del jugador.
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: primeros_saques
+        description: Número de primeros saques acertados por el jugador.
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: puntos_ganados_1er
+        description: Puntos ganados cuando el primer saque entró.
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: puntos_ganados_2do
+        description: Puntos ganados tras fallar el primer saque y entrar el segundo.
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: juegos_saque
+        description: Juegos al servicio jugados por el jugador.
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: bp_salvados
+        description: Puntos de break salvados por el jugador.
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: bp_enfrentados
+        description: Total de puntos de break enfrentados.
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: ingesta_tmz
+        description: Timestamp de ingesta del dato, usado para incrementalidad.
+        tests:
+          - not_null

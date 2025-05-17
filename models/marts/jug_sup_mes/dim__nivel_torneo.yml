@@ -1,0 +1,27 @@
+
+models:
+  - name: dim__nivel_torneo
+    description: >
+      Dimensión de referencia que describe los distintos niveles o categorías de los torneos
+      (por ejemplo, Grand Slam, ATP 1000, ATP 500). Se utiliza para enriquecer modelos de hechos
+      con semántica competitiva.
+
+    columns:
+      - name: id_nivel_torneo
+        description: Identificador único del nivel de torneo.
+        tests:
+          - not_null
+          - unique
+
+      - name: nivel_torneo
+        description: Código del nivel de torneo (ej. 'G', 'M', 'A').
+        tests:
+          - not_null
+          - unique
+          - accepted_values:
+              values: ['A', 'G', 'O', 'F', 'M'] 
+
+      - name: nivel_torneo_desc
+        description: Descripción legible del nivel de torneo (ej. "Grand Slam", "Masters 1000").
+        tests:
+          - not_null

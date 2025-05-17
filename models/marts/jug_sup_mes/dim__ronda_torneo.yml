@@ -1,0 +1,24 @@
+models:
+  - name: dim__ronda_torneo
+    description: >
+      Dimensión de referencia de las rondas de un torneo de tenis. 
+      Describe cada etapa del torneo, desde la ronda inicial hasta la final, con códigos y descripciones legibles.
+
+    columns:
+      - name: id_ronda_torneo
+        description: Identificador hash de la ronda del torneo.
+        tests:
+          - not_null
+          - unique
+
+      - name: ronda_torneo
+        description: Código de la ronda (por ejemplo, 'R32', 'QF', 'SF', 'F').
+        tests:
+          - not_null
+          - unique
+
+      - name: ronda_torneo_desc
+        description: Descripción legible de la ronda del torneo (ej. "Final", "Semifinal", "Cuartos de final").
+        tests:
+          - not_null
+          - unique

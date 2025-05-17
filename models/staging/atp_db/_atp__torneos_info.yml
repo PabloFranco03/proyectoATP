@@ -1,0 +1,42 @@
+sources:
+  - name: torneos
+    database: ALUMNO26_DEV_BRONZE_DB_ATP
+    schema: ATP_DB
+    description: "Información complementaria de torneos ATP: país, ciudad, año de primera edición y estadio principal."
+
+    quoting:
+      database: false
+      schema: false
+      identifier: false
+
+    tables:
+      - name: torneos_info
+        description: "Tabla con datos históricos y geográficos de los torneos ATP, utilizada como referencia base para la generación de claves y modelos intermedios."
+
+        columns:
+          - name: nombre_torneo
+            description: "Nombre oficial y distintivo del torneo, utilizado como clave natural para la identificación y trazabilidad en modelos posteriores."
+            tests:
+              - not_null
+              - unique
+
+          - name: pais
+            description: "País anfitrión del torneo, útil para segmentaciones geográficas y análisis por región."
+            tests:
+              - not_null
+
+          - name: ciudad
+            description: "Ciudad sede del torneo; puede coincidir con el nombre del estadio principal en algunos casos."
+            tests:
+              - not_null
+
+          - name: primera_edicion
+            description: "Año (formato AAAA) en que se celebró la primera edición registrada del torneo."
+            tests:
+              - dbt_expectations.expect_column_values_to_be_between:
+                  min_value: 1877
+                  config:
+                    severity: warn
+
+          - name: estadio_principal
+            description: "Nombre del estadio principal donde se desarrollan los partidos del torneo, cuando aplica."

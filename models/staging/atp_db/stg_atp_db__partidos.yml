@@ -1,0 +1,104 @@
+models:
+  - name: stg_atp_db__partidos
+    description: >
+      Modelo incremental que estandariza los partidos filtrando para eliminar losde Copa Davis a partir de la fuente 'atp.matches'.
+      Calcula identificadores únicos y normaliza los campos relevantes para análisis posteriores.
+    
+    columns:
+      - name: id_partido
+        description: ID único del partido, generado a partir de 'tourney_id' y 'match_num'.
+        tests:
+          - not_null
+          - unique
+
+      - name: id_torneo_anio
+        description: Identificador del torneo en un año específico, generado desde 'tourney_id'.
+        tests:
+          - not_null
+
+      - name: id_ronda_torneo
+        description: Identificador hash de la ronda del torneo (ej. "Final", "Semifinal", etc.).
+        tests:
+          - not_null
+
+
+      - name: id_ganador
+        description: Identificador del jugador ganador, generado desde 'winner_id'.
+        tests:
+          - not_null
+
+      - name: id_perdedor
+        description: Identificador del jugador perdedor, generado desde 'loser_id'.
+        tests:
+          - not_null
+
+      - name: duracion_minutos
+        description: Duración del partido en minutos. Puede estar nula si no está disponible.
+
+      - name: resultado
+        description: Marcador del partido en formato texto (ej. "6-4 7-6(5)").
+        tests:
+          - not_null
+
+      - name: sets_maximos
+        description: Número máximo de sets posibles en el partido (por ejemplo, 5 en Grand Slams).
+        tests:
+          - not_null
+
+# - name: sets_jugados
+#   description: >
+#     Total de sets jugados en el partido, extraído del marcador.
+#     Se cuenta el número de parciales tipo "6-4", "7-6", etc. usando expresiones regulares.
+#   tests:
+#     - dbt_expectations.expect_column_values_to_be_between:
+#         min_value: 1
+#         max_value: 5  # ⚠️ Podrías condicionar este test a sets_maximos si lo automatizas
+
+# - name: sets_ganador
+#   description: >
+#     Número de sets ganados por el jugador ganador, identificado por sets ganados con al menos 6 o 7 juegos.
+#     Usa un patrón REGEXP que detecta "6-" o "7-" al inicio de cada parcial.
+#   tests:
+#     - dbt_expectations.expect_column_values_to_be_between:
+#         min_value: 1
+#         max_value: 3  # ⚠️ Idealmente, este valor debería depender de sets_maximos
+
+# - name: sets_perdedor
+#   description: >
+#     Número de sets ganados por el jugador perdedor.
+#     Calculado como `sets_jugados - sets_ganador`.
+#   tests:
+#     - dbt_expectations.expect_column_values_to_be_between:
+#         min_value: 0
+#         max_value: 2  # ⚠️ Igual que arriba: esto puede variar si el match fue al mejor de 5
+
+# - name: tiebreaks_jugados
+#   description: >
+#     Cantidad de tiebreaks jugados en el partido.
+#     Se detectan por la presencia de paréntesis en los parciales, como "7-6(5)".
+
+# - name: fue_tiebreak_final
+#   description: >
+#     Indica si el último set fue definido por tiebreak.
+#     Busca un patrón con paréntesis al final del campo `score`.
+#   tests:
+#     - accepted_values:
+#         values: [true, false]
+
+# - name: resultado_normalizado
+#   description: >
+#     Marcador con sets separados por barra ("6-4 / 7-6(5)").
+#     Mejora la legibilidad y uniformidad del campo `score`.
+#   tests:
+#     - not_null
+
+
+      - name: numero_partido_torneo
+        description: Número secuencial del partido dentro del torneo.
+        tests:
+          - not_null
+
+      - name: ingesta_tmz
+        description: Timestamp de ingesta con zona horaria. Usado para controlar incrementalidad.
+        tests:
+          - not_null
