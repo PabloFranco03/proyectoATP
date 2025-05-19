@@ -1,13 +1,10 @@
-{{
-    config(
-        materialized='incremental',
-        unique_key='id_partido'
-    )
-}}
+{{ config(
+    materialized='incremental',
+    unique_key='id_partido'
+) }}
 
-with source as (
-    select 
-    match_id_unificada,
+WITH source AS (
+    SELECT 
         id_partido,
         id_torneo_anio,
         id_ronda_torneo,
@@ -18,20 +15,6 @@ with source as (
         sets_maximos,
         numero_partido_torneo,
         ingesta_tmz
-    from {{ ref('base_atp_db__matches') }}
-),
-
-partidos AS (
-    SELECT
-        match_id_unificada,
-        id_partido,
-        id_torneo_anio,
-        id_ronda_torneo,
-        id_ganador,
-        id_perdedor,
-        duracion_minutos,
-        resultado,
-        sets_maximos,
         -- Número de sets jugados (coincidencias tipo 6-4, 7-6, etc.)
         --REGEXP_COUNT(score, '\d+-\d+') AS sets_jugados,
         -- Sets ganados por el ganador
@@ -47,44 +30,26 @@ partidos AS (
         --END AS fue_tiebreak_final,
         -- Resultado normalizado: separa sets con barra
         --REPLACE(score, ' ', ' / ') AS resultado_normalizado,
-        numero_partido_torneo,
-        ingesta_tmz
-    FROM source
-    {% if is_incremental() %}
-            where ingesta_tmz > (select max(ingesta_tmz) from {{ this }})
-    {% endif %} 
+    FROM {{ ref('base_atp_db__matches') }}
 ),
 
-unificados AS (
+mapping AS (
+    SELECT *
+    FROM {{ ref('int__union_ids') }}
+),
+
+partidos AS (
     SELECT
-        p.*,
-        COALESCE(b1.match_id, b2.match_id) AS match_id_unir,
-        CASE
-            WHEN COALESCE(b1.match_id, b2.match_id) IS NOT NULL THEN TRUE
-            ELSE FALSE
-        END AS tiene_datos_punto_a_punto,
-        CASE
-            WHEN match_id_unificada = b1.match_id_unificada_gan1 THEN TRUE
-            WHEN match_id_unificada = b2.match_id_unificada_gan2 THEN FALSE
-            ELSE NULL
-        END AS player1_es_ganador,
-        CASE
-            WHEN match_id_unificada = b1.match_id_unificada_gan1 THEN id_ganador
-            WHEN match_id_unificada = b2.match_id_unificada_gan2 THEN id_perdedor
-            ELSE NULL
-        END AS id_player1,
-        CASE
-            WHEN match_id_unificada = b1.match_id_unificada_gan1 THEN id_perdedor
-            WHEN match_id_unificada = b2.match_id_unificada_gan2 THEN id_ganador
-            ELSE NULL
-        END AS id_player2
-    FROM partidos p
-
-    LEFT JOIN {{ ref('base_atp_db__matches_gran_slam') }} b1
-        ON match_id_unificada = b1.match_id_unificada_gan1
-
-    LEFT JOIN {{ ref('base_atp_db__matches_gran_slam') }} b2
-        ON match_id_unificada = b2.match_id_unificada_gan2
+        s.*,
+        m.ganador,
+        m.id_player1,
+        m.id_player2
+    FROM source s
+    LEFT JOIN mapping m
+      ON s.id_partido = m.id_partido
+    {% if is_incremental() %}
+      WHERE s.ingesta_tmz > (SELECT MAX(ingesta_tmz) FROM {{ this }})
+    {% endif %}
 )
 
-SELECT * FROM unificados
+SELECT * FROM partidos

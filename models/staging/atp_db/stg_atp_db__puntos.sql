@@ -1,78 +1,44 @@
-WITH raw AS (
-    SELECT *
-    FROM {{ source('extra_grand_slam', 'puntos_grand_slam') }}
-)
+{{ config(
+    materialized = 'incremental',
+    unique_key = 'id_partido || '-' || numero_punto_partido'
+) }}
 
-fuente AS (
+WITH puntos AS (
     SELECT
-        match_id AS match_id_unir,
-        elapsed_time AS tiempo_transcurrido,
-        CAST(set_no AS INT) AS numero_set,
-        CAST(p1_games_won AS INT) AS juegos_ganados_j1,
-        CAST(p2_games_won AS INT) AS juegos_ganados_j2,
-        CAST(set_winner AS INT) AS set_ganador,
-        CAST(game_no AS INT) AS numero_juego,
-        CAST(game_winner AS INT) AS juego_ganador,
-        point_number AS numero_punto,
-        CAST(point_winner AS INT) AS punto_ganador,
-        CAST(point_server AS INT) AS jugador_saca,
-        CAST(NULLIF(speed_kmh, '') AS FLOAT) AS velocidad_saque_kmh,
-        rally AS rally,
-        p1_score AS marcador_j1,
-        p2_score AS marcador_j2,
-        CAST(p1_momentum AS INT) AS momentum_j1,
-        CAST(p2_momentum AS INT) AS momentum_j2,
-        CAST(p1_points_won AS INT) AS puntos_totales_j1,
-        CAST(p2_points_won AS INT) AS puntos_totales_j2,
-        CAST(p1_ace AS INT) AS ace_j1,
-        CAST(p2_ace AS INT) AS ace_j2,
-        CAST(p1_winner AS INT) AS winner_j1,
-        CAST(p2_winner AS INT) AS winner_j2,
-        CAST(p1_double_fault AS INT) AS doble_falta_j1,
-        CAST(p2_double_fault AS INT) AS doble_falta_j2,
-        CAST(p1_unf_err AS INT) AS error_no_forzado_j1,
-        CAST(p2_unf_err AS INT) AS error_no_forzado_j2,
-        CAST(p1_net_point AS INT) AS punto_red_j1,
-        CAST(p2_net_point AS INT) AS punto_red_j2,
-        CAST(p1_net_point_won AS INT) AS punto_red_ganado_j1,
-        CAST(p2_net_point_won AS INT) AS punto_red_ganado_j2,
-        CAST(p1_break_point AS INT) AS breakpoint_j1,
-        CAST(p2_break_point AS INT) AS breakpoint_j2,
-        CAST(p1_break_point_won AS INT) AS breakpoint_ganado_j1,
-        CAST(p2_break_point_won AS INT) AS breakpoint_ganado_j2,
-        CAST(p1_first_srv_in AS INT) AS primer_saque_dentro_j1,
-        CAST(p2_first_srv_in AS INT) AS primer_saque_dentro_j2,
-        CAST(p1_first_srv_won AS INT) AS punto_ganado_con_primer_saque_j1,
-        CAST(p2_first_srv_won AS INT) AS punto_ganado_con_primer_saque_j2,
-        CAST(p1_second_srv_in AS INT) AS segundo_saque_dentro_j1,
-        CAST(p2_second_srv_in AS INT) AS segundo_saque_dentro_j2,
-        CAST(p1_second_srv_won AS INT) AS punto_ganado_con_segundo_saque_j1,
-        CAST(p2_second_srv_won AS INT) AS punto_ganado_con_segundo_saque_j2,
-        CAST(p1_forced_error AS INT) AS error_forzado_j1,
-        CAST(p2_forced_error AS INT) AS error_forzado_j2,
-        history AS historia,
-        CAST(NULLIF(speed_mph, '') AS FLOAT) AS velocidad_saque_mph,
-        CAST(p1_break_point_missed AS INT) AS breakpoint_fallado_j1,
-        CAST(p2_break_point_missed AS INT) AS breakpoint_fallado_j2,
-        serve_indicator AS indicador_saque,
-        serve_direction AS direccion_saque,
-        CAST(winner_fh AS INT) AS winner_derecha,
-        CAST(winner_bh AS INT) AS winner_reves,
-        serving_to AS lado_saque,
-        CAST(p1_turning_point AS INT) AS punto_clave_j1,
-        CAST(p2_turning_point AS INT) AS punto_clave_j2,
-        CAST(serve_number AS INT) AS numero_intento_saque,
-        winner_type AS tipo_winner,
-        winner_shot_type AS tipo_golpe_winner,
-        CAST(p1_distance_run AS FLOAT) AS distancia_recorrida_j1,
-        CAST(p2_distance_run AS FLOAT) AS distancia_recorrida_j2,
-        CAST(rally_count AS INT) AS cantidad_golpes,
-        serve_width AS anchura_saque,
-        serve_depth AS profundidad_saque,
-        return_depth AS profundidad_restos,
-        ingesta_tmz AS ingesta_tmz
-    FROM raw
+        match_id,
+        numero_juego AS id_juego,
+        numero_punto_partido AS id_punto,
+        ganador_punto AS punto_winner,
+        rally,
+        p1_score,
+        p2_score,
+        ingesta_tmz
+    FROM {{ ref('base_extra_grand_slam__puntos_gran_slam') }}
+    WHERE numero_punto_partido IS NOT NULL
+),
+
+mapping AS (
+    SELECT
+        id_partido_otro,
+        id_partido,
+        id_player1,
+        id_player2
+    FROM {{ ref('int_match_id_mapping') }}
 )
 
-SELECT *
-FROM fuente
+SELECT
+    m.id_partido,
+    p.id_juego,
+    p.id_punto,
+    p.punto_winner,
+    CASE 
+        WHEN p.punto_winner = 1 THEN m.id_player2
+        WHEN p.punto_winner = 2 THEN m.id_player1
+        ELSE NULL
+    END AS punto_loser,
+    p.rally,
+    CONCAT(p.p1_score, '-', p.p2_score) AS resultado_momento_saque,
+    p.ingesta_tmz
+FROM puntos p
+LEFT JOIN mapping m
+  ON p.match_id = m.id_partido_otro
