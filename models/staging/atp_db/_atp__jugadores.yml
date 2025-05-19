@@ -1,0 +1,41 @@
+version: 2
+
+sources:
+  - name: extra_jugadores
+    database: ALUMNO26_DEV_BRONZE_DB_ATP
+    schema: ATP_DB
+    tables:
+      - name: jugadores
+        description: "Dimensión de jugadores ATP con datos personales y referencias externas."
+        columns:
+          - name: player_id
+            description: "Identificador único del jugador."
+            tests:
+              - not_null
+              - unique
+
+          - name: name_first
+            description: "Nombre de pila del jugador."
+
+          - name: name_last
+            description: "Apellido del jugador."
+
+          - name: hand
+            description: "Mano dominante del jugador (R, L o U para desconocido)."
+
+          - name: dob
+            description: "Fecha de nacimiento en formato string (YYYYMMDD)."
+
+          - name: ioc
+            description: "Código del país (COI)."
+
+          - name: height
+            description: "Altura del jugador en centímetros."
+
+          - name: wikidata_id
+            description: "Identificador del jugador en Wikidata (ej: Q69044)."
+
+          - name: ingesta_tmz
+            description: "Timestamp de la carga del fichero en Snowflake."
+            tests:
+              - not_null

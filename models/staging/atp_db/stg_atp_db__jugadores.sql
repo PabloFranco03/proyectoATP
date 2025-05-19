@@ -49,24 +49,33 @@ registro_vacio AS (
         NULL AS cod_pais
 ),
 
+union_total AS (
+    SELECT * FROM jugadores_union
+    UNION ALL
+    SELECT * FROM registro_vacio
+),
+
 ioc_paises AS (
     SELECT *
     FROM {{ ref('paises_ioc') }}
 ),
 
-union_total AS (
-    SELECT * FROM jugadores_union
-    UNION ALL
-    SELECT * FROM registro_vacio
+jugadores_base AS (
+    SELECT player_id, fecha_nacimiento, wikidata_id
+    FROM {{ ref('base_jugadores') }}
 )
 
 SELECT
-    {{ dbt_utils.generate_surrogate_key(['id_jugador']) }} AS id_jugador,
-    nombre_jugador,
-    mano_dominante,
-    altura_cm,
-    cod_pais,
-    p.pais_completo as pais_desc
+    j.id_jugador,
+    j.nombre_jugador,
+    j.mano_dominante,
+    j.altura_cm,
+    j.cod_pais,
+    p.pais_completo AS pais_desc,
+    b.fecha_nacimiento,
+    b.wikidata_id
 FROM union_total j
 LEFT JOIN ioc_paises p
     ON j.cod_pais = p.cod_ioc
+LEFT JOIN jugadores_base b
+    ON j.id_jugador = b.player_id
