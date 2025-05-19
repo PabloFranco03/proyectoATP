@@ -1,3 +1,9 @@
+{{
+    config(
+        materialized = 'view'
+    )
+}}
+
 WITH raw_torneos_info AS (
     SELECT  *
     FROM {{ source('torneos', 'torneos_info') }}

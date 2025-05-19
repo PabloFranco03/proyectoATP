@@ -62,7 +62,7 @@ ioc_paises AS (
 
 jugadores_base AS (
     SELECT player_id, fecha_nacimiento, wikidata_id
-    FROM {{ ref('base_jugadores') }}
+    FROM {{ ref('base_atp_db__jugadores') }}
 )
 
 SELECT

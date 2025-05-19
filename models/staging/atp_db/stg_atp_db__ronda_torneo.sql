@@ -2,16 +2,16 @@
 
 WITH raw_matches AS (
     SELECT 
-    round
-    FROM {{ source('atp', 'matches') }}
-    WHERE {{ filtrado_copa_davis('tourney_level') }}
+    id_ronda_torneo,
+    ronda_torneo
+    FROM {{ ref("base_atp_db__matches") }}
 )
 
 SELECT DISTINCT
-    {{ dbt_utils.generate_surrogate_key(['round']) }} AS id_ronda_torneo,
-    round AS ronda_torneo,
+    id_ronda_torneo,
+    ronda_torneo,
 
-    CASE round
+    CASE ronda_torneo
         WHEN 'F'     THEN 'Final'
         WHEN 'SF'    THEN 'Semifinal'
         WHEN 'QF'    THEN 'Cuartos de final'

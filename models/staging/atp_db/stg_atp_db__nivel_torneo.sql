@@ -1,15 +1,17 @@
-{{ config(materialized='table') }}
+{{ 
+    config(materialized='table') 
+}}
 
 WITH raw_matches AS (
     SELECT 
-    tourney_level
-    FROM {{ source('atp', 'matches') }}
-    WHERE {{ filtrado_copa_davis('tourney_level') }}
+    id_nivel_torneo,
+    nivel_torneo,
+    FROM {{ ref("base_atp_db__matches") }}
 )
 
 SELECT DISTINCT
-    {{ dbt_utils.generate_surrogate_key(['tourney_level']) }} AS id_nivel_torneo,
-    tourney_level AS nivel_torneo,
+    id_nivel_torneo,
+    nivel_torneo,
 
     CASE nivel_torneo
         WHEN 'A' THEN 'Torneo ATP'

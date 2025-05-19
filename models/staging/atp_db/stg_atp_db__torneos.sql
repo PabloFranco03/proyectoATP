@@ -1,8 +1,10 @@
 {{ config(materialized='table') }}
 
 WITH torneo_base AS (
-    SELECT *
-    FROM {{ ref('base_atp_db__torneos') }}
+    SELECT 
+    id_torneo,
+    nombre_torneo,
+    FROM {{ ref('base_atp_db__matches') }}
 ),
 
 torneos_info_limpio AS (
@@ -12,7 +14,7 @@ torneos_info_limpio AS (
 
 SELECT
     b.id_torneo,
-    b.nombre,
+    b.nombre_torneo AS nombre,
     i.pais,
     i.ciudad,
     i.primera_edicion,

@@ -2,15 +2,16 @@
 
 WITH raw_matches AS (
     SELECT 
-    surface
-    FROM {{ source('atp', 'matches') }}
+    id_superficie,
+    superficie
+    FROM {{ ref("base_atp_db__matches") }}
 )
 
 SELECT DISTINCT
-    {{ dbt_utils.generate_surrogate_key([limpiar_texto("surface")]) }} AS id_superficie,
-    surface AS superficie,
+    id_superficie,
+    superficie,
 
-    CASE surface
+    CASE superficie
         WHEN 'Clay' THEN 'Tierra batida'
         WHEN 'Hard' THEN 'Dura'
         WHEN 'Grass' THEN 'Hierba'
@@ -18,7 +19,7 @@ SELECT DISTINCT
         ELSE 'Desconocida'
     END AS nombre_superficie,
 
-    CASE surface
+    CASE superficie
         WHEN 'Hard' THEN TRUE
         WHEN 'Grass' THEN TRUE
         WHEN 'Carpet' THEN TRUE

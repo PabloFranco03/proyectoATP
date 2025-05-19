@@ -1,3 +1,9 @@
+{{
+    config(
+        materialized = 'view'
+    )
+}}
+
 WITH raw AS (
     SELECT *
     FROM {{ source('extra_grand_slam', 'matches_grand_slam') }}

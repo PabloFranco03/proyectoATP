@@ -6,7 +6,18 @@
 }}
 
 with source as (
-    select *
+    select 
+    match_id_unificada,
+        id_partido,
+        id_torneo_anio,
+        id_ronda_torneo,
+        id_ganador,
+        id_perdedor,
+        duracion_minutos,
+        resultado,
+        sets_maximos,
+        numero_partido_torneo,
+        ingesta_tmz
     from {{ ref('base_atp_db__matches') }}
 ),
 
@@ -69,10 +80,10 @@ unificados AS (
         END AS id_player2
     FROM partidos p
 
-    LEFT JOIN {{ ref('base_matches_grand_slam') }} b1
+    LEFT JOIN {{ ref('base_atp_db__matches_gran_slam') }} b1
         ON match_id_unificada = b1.match_id_unificada_gan1
 
-    LEFT JOIN {{ ref('base_matches_grand_slam') }} b2
+    LEFT JOIN {{ ref('base_atp_db__matches_gran_slam') }} b2
         ON match_id_unificada = b2.match_id_unificada_gan2
 )
 

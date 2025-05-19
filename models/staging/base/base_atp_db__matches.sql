@@ -1,3 +1,9 @@
+{{
+    config(
+        materialized = 'view'
+    )
+}}
+
 with source as (
     select *
     from {{ source('atp', 'matches') }}
@@ -10,7 +16,7 @@ partidos AS (
         {{ dbt_utils.generate_surrogate_key(['tourney_id']) }} AS id_torneo_anio,
         {{ dbt_utils.generate_surrogate_key(['tourney_id', 'match_num']) }} AS id_partido,
         {{ dbt_utils.generate_surrogate_key([limpiar_texto("tourney_name")]) }} AS id_torneo,
-        tourney_name AS nombre,
+        tourney_name AS nombre_torneo,
         {{ dbt_utils.generate_surrogate_key([limpiar_texto("surface")]) }} AS id_superficie,
         surface AS superficie,
         draw_size as total_jugadores,
