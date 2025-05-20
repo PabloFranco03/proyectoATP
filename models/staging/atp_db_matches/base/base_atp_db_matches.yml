@@ -1,0 +1,497 @@
+version: 2
+
+models:
+  - name: partidos
+    description: >
+      Vista que contiene los partidos filtrados por torneos relevantes del circuito ATP,
+      enriquecida con identificadores únicos y limpieza de nombres para análisis posterior.
+    columns:
+      - name: id_torneo_anio
+        description: ID único del torneo por año.
+        data_type: string
+        tests:
+          - not_null
+
+      - name: id_partido_estadisticas_gan
+        description: ID único del partido para las estadísticas del jugador ganador.
+        data_type: string
+        tests:
+          - not_null
+
+      - name: id_partido_estadisticas_per
+        description: ID único del partido para las estadísticas del jugador perdedor.
+        data_type: string
+        tests:
+          - not_null
+
+      - name: id_partido
+        description: ID único del partido dentro de un torneo.
+        data_type: string
+        tests:
+          - not_null
+
+      - name: id_torneo
+        description: ID hash del nombre del torneo (limpio).
+        data_type: string
+        tests:
+          - not_null
+
+      - name: nombre_torneo
+        description: Nombre oficial del torneo.
+        data_type: string
+        tests:
+          - not_null
+
+      - name: id_superficie
+        description: ID hash de la superficie del torneo.
+        data_type: string
+        tests:
+          - not_null
+
+      - name: superficie
+        description: Tipo de superficie donde se jugó el partido (Hard, Clay, Grass, etc.).
+        data_type: string
+        tests:
+          - not_null
+
+      - name: total_jugadores
+        description: Número de jugadores en el cuadro principal del torneo.
+        data_type: integer
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 2
+              strictly: true
+
+      - name: id_nivel_torneo
+        description: ID hash del nivel del torneo (e.g., G, M, A, D).
+        data_type: string
+        tests:
+          - not_null
+
+      - name: nivel_torneo
+        description: Código que representa el nivel del torneo (Grand Slam, Masters 1000, etc.).
+        data_type: string
+        tests:
+          - not_null
+
+      - name: fecha_inicio
+        description: Fecha de inicio del torneo.
+        data_type: date
+        tests:
+          - not_null
+
+      - name: numero_partido_torneo
+        description: Número de partido dentro del torneo.
+        data_type: integer
+        tests:
+          - not_null
+
+      - name: id_ganador
+        description: ID hash del jugador ganador.
+        data_type: string
+        tests:
+          - not_null
+
+      - name: winner_name
+        description: Nombre del jugador que ganó el partido.
+        data_type: string
+        tests:
+          - not_null
+
+      - name: winner_hand
+        description: Mano dominante del ganador (R, L, U).
+        data_type: string
+
+      - name: winner_ht
+        description: Altura del jugador ganador en centímetros.
+        data_type: integer
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 140
+              max_value: 220
+
+      - name: winner_ioc
+        description: Código de país del jugador ganador.
+        data_type: string
+
+      - name: winner_age
+        description: Edad del jugador ganador al momento del partido.
+        data_type: float
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 15
+              strictly: true
+
+      - name: id_perdedor
+        description: ID hash del jugador perdedor.
+        data_type: string
+        tests:
+          - not_null
+
+      - name: loser_name
+        description: Nombre del jugador que perdió el partido.
+        data_type: string
+        tests:
+          - not_null
+
+      - name: loser_hand
+        description: Mano dominante del perdedor.
+        data_type: string
+
+      - name: loser_ht
+        description: Altura del jugador perdedor.
+        data_type: integer
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 140
+              max_value: 220
+
+      - name: loser_ioc
+        description: Código de país del jugador perdedor.
+        data_type: string
+
+      - name: loser_age
+        description: Edad del jugador perdedor al momento del partido.
+        data_type: float
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 10
+              strictly: true
+
+      - name: resultado
+        description: Resultado del partido en formato de sets.
+        data_type: string
+
+      - name: sets_maximos
+        description: Número máximo de sets permitidos en el partido.
+        data_type: integer
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 1
+              max_value: 5
+
+      - name: id_ronda_torneo
+        description: ID hash de la ronda del torneo.
+        data_type: string
+        tests:
+          - not_null
+
+      - name: ronda_torneo
+        description: Ronda del torneo (1R, QF, SF, F, etc.).
+        data_type: string
+        tests:
+          - not_null
+
+      - name: duracion_minutos
+        description: Duración total del partido en minutos.
+        data_type: integer
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              strictly: true
+
+      - name: w_ace
+        description: Número de aces del jugador ganador.
+        data_type: integer
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: w_df
+        description: Doble faltas del jugador ganador.
+        data_type: integer
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: w_svpt
+        description: Puntos totales al saque del jugador ganador.
+        data_type: integer
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: w_1stin
+        description: Primeros servicios dentro del jugador ganador.
+        data_type: integer
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: w_1stwon
+        description: Puntos ganados con el primer servicio del jugador ganador.
+        data_type: integer
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: w_2ndwon
+        description: Puntos ganados con el segundo servicio del jugador ganador.
+        data_type: integer
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: w_svgms
+        description: Juegos al saque del jugador ganador.
+        data_type: integer
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: w_bpsaved
+        description: Break points salvados por el jugador ganador.
+        data_type: integer
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: w_bpfaced
+        description: Break points enfrentados por el jugador ganador.
+        data_type: integer
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: l_ace
+        description: Aces del jugador perdedor.
+        data_type: integer
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: l_df
+        description: Doble faltas del jugador perdedor.
+        data_type: integer
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: l_svpt
+        description: Puntos al saque del jugador perdedor.
+        data_type: integer
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: l_1stin
+        description: Primeros servicios dentro del jugador perdedor.
+        data_type: integer
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: l_1stwon
+        description: Puntos ganados con el primer servicio del jugador perdedor.
+        data_type: integer
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: l_2ndwon
+        description: Puntos ganados con el segundo servicio del jugador perdedor.
+        data_type: integer
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: l_svgms
+        description: Juegos al saque del jugador perdedor.
+        data_type: integer
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: l_bpsaved
+        description: Break points salvados por el jugador perdedor.
+        data_type: integer
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: l_bpfaced
+        description: Break points enfrentados por el jugador perdedor.
+        data_type: integer
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: winner_rank
+        description: Ranking ATP del jugador ganador antes del partido.
+        data_type: integer
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 1
+
+      - name: winner_rank_points
+        description: Puntos ATP del jugador ganador antes del partido.
+        data_type: integer
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: loser_rank
+        description: Ranking ATP del jugador perdedor antes del partido.
+        data_type: integer
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 1
+
+      - name: loser_rank_points
+        description: Puntos ATP del jugador perdedor antes del partido.
+        data_type: integer
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: ingesta_tmz
+        description: Timestamp de ingesta de los datos.
+        data_type: timestamp
+        tests:
+          - not_null
+
+      - name: year
+        description: Año en el que se jugó el torneo.
+        data_type: integer
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 1968
+              max_value: 2100
+
+      - name: slam_limpio
+        description: Nombre del torneo limpiado para consistencia textual.
+        data_type: string
+        tests:
+          - not_null
+
+      - name: player1_limpio
+        description: Nombre del jugador 1 limpiado.
+        data_type: string
+        tests:
+          - not_null
+
+      - name: player2_limpio
+        description: Nombre del jugador 2 limpiado.
+        data_type: string
+        tests:
+          - not_null
+
+      - name: match_id_unificada
+        description: ID único del partido unificado por año, torneo y jugadores.
+        data_type: string
+        tests:
+          - not_null
+          - unique
+
+
+#-------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+  - name: jugadores
+    description: >
+      Vista de jugadores ATP con información básica como nombre, fecha de nacimiento,
+      nacionalidad y altura, proveniente de una fuente externa y transformada para análisis.
+    columns:
+      - name: id_jugador
+        description: ID único del jugador, generado como surrogate key.
+        data_type: string
+        tests:
+          - not_null
+          - unique
+
+      - name: nombre
+        description: Nombre de pila del jugador.
+        data_type: string
+        tests:
+          - not_null
+
+      - name: apellido
+        description: Apellido del jugador.
+        data_type: string
+        tests:
+          - not_null
+
+      - name: nombre_completo
+        description: Nombre completo del jugador (nombre + apellido).
+        data_type: string
+        tests:
+          - not_null
+
+      - name: mano_dominante
+        description: "Mano dominante del jugador (R: diestro, L: zurdo, U: desconocido)."
+        data_type: string
+
+      - name: fecha_nacimiento
+        description: Fecha de nacimiento del jugador.
+        data_type: date
+        tests:
+          - not_null
+
+      - name: cod_pais
+        description: Código de país (IOC) del jugador.
+        data_type: string
+        tests:
+          - not_null
+
+      - name: altura_cm
+        description: Altura del jugador en centímetros.
+        data_type: integer
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 140
+              max_value: 230
+
+      - name: wikidata_id
+        description: ID del jugador en Wikidata (si está disponible).
+        data_type: string
+
+      - name: ingesta_tmz
+        description: Timestamp de ingesta del dato.
+        data_type: timestamp
+        tests:
+          - not_null
+
+
+#--------------------------------------------------------------------------------------------------------------------------------------------------
+
+  - name: torneos_info
+    description: >
+      Vista que contiene información básica de los torneos ATP, incluyendo nombre,
+      país, ciudad, estadio y año de la primera edición.
+    columns:
+      - name: id_torneo
+        description: ID único del torneo generado a partir del nombre normalizado.
+        data_type: string
+        tests:
+          - not_null
+          - unique
+
+      - name: nombre_torneo
+        description: Nombre oficial del torneo.
+        data_type: string
+        tests:
+          - not_null
+
+      - name: pais
+        description: País donde se disputa el torneo.
+        data_type: string
+        tests:
+          - not_null
+
+      - name: ciudad
+        description: Ciudad sede del torneo.
+        data_type: string
+        tests:
+          - not_null
+
+      - name: primera_edicion
+        description: Año de la primera edición del torneo.
+        data_type: integer
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 1800
+              max_value: 2100
+
+      - name: estadio_principal
+        description: Nombre del estadio principal del torneo.
+        data_type: string

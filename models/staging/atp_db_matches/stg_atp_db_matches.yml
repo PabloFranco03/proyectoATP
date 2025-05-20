@@ -1,0 +1,464 @@
+version: 2
+
+models:
+  - name: torneos
+    description: >
+      Dimensión que combina información básica de torneos jugados con metadatos históricos
+      y geográficos provenientes de la tabla de torneos. Útil para análisis por sede, país o antigüedad.
+    columns:
+      - name: id_torneo
+        description: ID único del torneo, derivado del nombre normalizado.
+        data_type: string
+        tests:
+          - not_null
+          - unique
+
+      - name: nombre
+        description: Nombre oficial del torneo.
+        data_type: string
+        tests:
+          - not_null
+
+      - name: pais
+        description: País donde se disputa el torneo.
+        data_type: string
+
+      - name: ciudad
+        description: Ciudad sede del torneo.
+        data_type: string
+
+      - name: primera_edicion
+        description: Año en que se disputó por primera vez el torneo.
+        data_type: integer
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 1800
+              max_value: 2100
+
+      - name: estadio_principal
+        description: Nombre del estadio principal donde se disputa el torneo.
+        data_type: string
+
+
+#----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+  - name: torneos_anio
+    description: >
+      Dimensión que resume información de cada edición de torneo por año.
+      Incluye identificadores del torneo, superficie, nivel, fecha de inicio y tamaño del cuadro.
+    columns:
+      - name: id_torneo_anio
+        description: Identificador único de una edición de torneo en un año específico.
+        data_type: string
+        tests:
+          - not_null
+          - unique
+
+      - name: id_torneo
+        description: ID del torneo base (sin considerar el año).
+        data_type: string
+        tests:
+          - not_null
+
+      - name: id_superficie
+        description: ID hash de la superficie del torneo.
+        data_type: string
+        tests:
+          - not_null
+
+      - name: id_nivel_torneo
+        description: ID hash del nivel del torneo.
+        data_type: string
+        tests:
+          - not_null
+
+      - name: fecha_inicio
+        description: Fecha en que comenzó el torneo.
+        data_type: date
+        tests:
+          - not_null
+
+      - name: anio_inicio
+        description: Año de inicio del torneo.
+        data_type: integer
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 1800
+              max_value: 2100
+
+      - name: mes_inicio
+        description: Mes del año en que empezó el torneo.
+        data_type: integer
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 1
+              max_value: 12
+
+      - name: total_jugadores
+        description: Número de jugadores que participaron en el cuadro del torneo.
+        data_type: integer
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 2
+              max_value: 512
+
+
+#--------------------------------------------------------------------------------------------------------------------------------------------
+
+
+  - name: nivel_torneo
+    description: >
+      Dimensión que referencia los distintos niveles de torneo en el circuito ATP,
+      transformando los códigos (`nivel_torneo`) en descripciones legibles.
+    columns:
+      - name: id_nivel_torneo
+        description: ID hash del nivel del torneo.
+        data_type: string
+        tests:
+          - not_null
+          - unique
+
+      - name: nivel_torneo
+        description: Código del nivel del torneo (G, M, A, O, F).
+        data_type: string
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['A', 'G', 'O', 'F', 'M']
+
+      - name: nivel_torneo_desc
+        description: Descripción legible del nivel del torneo.
+        data_type: string
+        tests:
+          - not_null
+
+
+#---------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+  - name: ronda_torneo
+    description: >
+      Dimensión que traduce los códigos de ronda de torneo a descripciones legibles,
+      permitiendo una mejor interpretación en análisis y dashboards.
+    columns:
+      - name: id_ronda_torneo
+        description: ID hash de la ronda del torneo.
+        data_type: string
+        tests:
+          - not_null
+          - unique
+
+      - name: ronda_torneo
+        description: Código de la ronda del torneo (F, SF, QF, etc.).
+        data_type: string
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['F', 'SF', 'QF', 'R16', 'R32', 'R64', 'R128', 'RR', 'BR']
+
+      - name: ronda_torneo_desc
+        description: Descripción legible de la ronda del torneo.
+        data_type: string
+        tests:
+          - not_null
+
+
+#---------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+  - name: superficies
+    description: >
+      Dimensión que categoriza las superficies de torneo, incluyendo descripciones legibles
+      y una clasificación boolean de si la superficie es considerada rápida.
+    columns:
+      - name: id_superficie
+        description: ID hash de la superficie.
+        data_type: string
+        tests:
+          - not_null
+          - unique
+
+      - name: superficie
+        description: Tipo de superficie (Clay, Hard, Grass, Carpet).
+        data_type: string
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['Clay', 'Hard', 'Grass', 'Carpet']
+
+      - name: nombre_superficie
+        description: Descripción legible de la superficie.
+        data_type: string
+        tests:
+          - not_null
+
+      - name: es_rapida
+        description: TRUE si la superficie es considerada rápida (Hard, Grass, Carpet).
+        data_type: boolean
+        tests:
+          - not_null
+
+
+#------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+  - name: jugadores
+    description: >
+      Dimensión consolidada de jugadores a partir de partidos como ganadores o perdedores, enriquecida
+      con metadatos personales (país, fecha de nacimiento, wikidata). Incluye un registro vacío como fallback.
+    columns:
+      - name: id_jugador
+        description: Identificador único del jugador.
+        data_type: string
+        tests:
+          - not_null
+          - unique
+
+      - name: nombre_jugador
+        description: Nombre completo del jugador según registro en partidos.
+        data_type: string
+        tests:
+          - not_null
+
+      - name: mano_dominante
+        description: Mano dominante del jugador (R, L, U).
+        data_type: string
+        tests:
+          - accepted_values:
+              values: ['R', 'L', 'U']
+              config:
+                where: "mano_dominante is not null"
+
+      - name: altura_cm
+        description: Altura del jugador en centímetros.
+        data_type: integer
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 140
+              max_value: 230
+              config:
+                where: "altura_cm is not null"
+
+      - name: cod_pais
+        description: Código de país IOC del jugador.
+        data_type: string
+
+      - name: pais_desc
+        description: Nombre completo del país asociado al código IOC.
+        data_type: string
+
+      - name: fecha_nacimiento
+        description: Fecha de nacimiento del jugador.
+        data_type: date
+
+      - name: wikidata_id
+        description: Identificador del jugador en Wikidata (si está disponible).
+        data_type: string
+
+
+#---------------------------------------------------------------------------------------------------------------------------------------------
+
+
+  - name: ranking_atp
+    description: >
+      Modelo incremental que contiene el historial del ranking ATP por jugador y fecha.
+      Incluye posición, puntos y claves de identificación, útil para análisis temporales
+      y evolución de jugadores.
+    columns:
+      - name: id_ranking
+        description: Identificador único del ranking por jugador y fecha.
+        data_type: string
+        tests:
+          - not_null
+          - unique
+
+      - name: ranking_fecha
+        description: Fecha del ranking en formato YYYY-MM-DD.
+        data_type: date
+        tests:
+          - not_null
+
+      - name: posicion_ranking
+        description: Posición del jugador en el ranking ATP en la fecha correspondiente.
+        data_type: integer
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 1
+
+      - name: id_jugador
+        description: Identificador del jugador (hash del player_id original).
+        data_type: string
+        tests:
+          - not_null
+
+      - name: puntos
+        description: Puntos ATP del jugador en la fecha correspondiente.
+        data_type: integer
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: ingesta_tmz
+        description: Timestamp de ingesta del dato.
+        data_type: timestamp
+        tests:
+          - not_null
+
+
+#-----------------------------------------------------------------------------------------------------------------------------------------------ç
+
+
+  - name: partidos
+    description: >
+      Tabla de hechos con los partidos ATP, incluyendo duración, resultado, sets máximos,
+      jugadores involucrados y metadatos de torneo. Diseñada como modelo incremental.
+    columns:
+      - name: id_partido
+        description: Identificador único del partido.
+        data_type: string
+        tests:
+          - not_null
+          - unique
+
+      - name: id_torneo_anio
+        description: Identificador del torneo en el año correspondiente.
+        data_type: string
+        tests:
+          - not_null
+
+      - name: id_ronda_torneo
+        description: Identificador de la ronda del torneo.
+        data_type: string
+        tests:
+          - not_null
+
+      - name: id_ganador
+        description: Identificador del jugador que ganó el partido.
+        data_type: string
+        tests:
+          - not_null
+
+      - name: id_perdedor
+        description: Identificador del jugador que perdió el partido.
+        data_type: string
+        tests:
+          - not_null
+
+      - name: duracion_minutos
+        description: Duración total del partido en minutos.
+        data_type: integer
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 10
+              config:
+                where: "duracion_minutos is not null"
+
+      - name: resultado
+        description: Resultado textual del partido (por ejemplo, 6-4 3-6 7-6).
+        data_type: string
+        tests:
+          - not_null
+
+      - name: sets_maximos
+        description: Número máximo de sets permitidos en el partido (usualmente 3 o 5).
+        data_type: integer
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 1
+              max_value: 5
+
+      - name: numero_partido_torneo
+        description: Número del partido dentro del torneo.
+        data_type: integer
+        tests:
+          - not_null
+
+      - name: ingesta_tmz
+        description: Timestamp de ingesta del dato.
+        data_type: timestamp
+        tests:
+          - not_null
+
+#---------------------------------------------------------------------------------------------------------------------------------------------
+
+
+  - name: estadisticas_partido_jug
+    description: >
+      Vista longitudinal que transforma las estadísticas de partido en registros por jugador.
+      Incluye indicadores de saque, puntos ganados y presión (break points), diferenciando
+      ganadores y perdedores de cada partido.
+    columns:
+      - name: id_partido_estadisticas
+        description: Identificador único del registro estadístico por partido y jugador.
+        data_type: string
+        tests:
+          - not_null
+          - unique
+
+      - name: id_partido
+        description: Identificador del partido.
+        data_type: string
+        tests:
+          - not_null
+
+      - name: id_jugador
+        description: Identificador del jugador al que corresponde el registro.
+        data_type: string
+        tests:
+          - not_null
+
+      - name: ha_ganado
+        description: TRUE si el jugador ganó el partido.
+        data_type: boolean
+        tests:
+          - not_null
+
+      - name: aces
+        description: Número de aces realizados por el jugador.
+        data_type: integer
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: dobles_faltas
+        description: Número de dobles faltas cometidas por el jugador.
+        data_type: integer
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: puntos_saque
+        description: Puntos totales jugados al saque.
+        data_type: integer
+
+      - name: primeros_saques
+        description: Primeros servicios dentro.
+        data_type: integer
+
+      - name: puntos_ganados_1er
+        description: Puntos ganados con el primer servicio.
+        data_type: integer
+
+      - name: puntos_ganados_2do
+        description: Puntos ganados con el segundo servicio.
+        data_type: integer
+
+      - name: juegos_saque
+        description: Juegos al saque jugados por el jugador.
+        data_type: integer
+
+      - name: bp_salvados
+        description: Break points salvados por el jugador.
+        data_type: integer
+
+      - name: bp_enfrentados
+        description: Break points totales enfrentados por el jugador.
+        data_type: integer
+
+      - name: ingesta_tmz
+        description: Timestamp de ingesta del dato.
+        data_type: timestamp
+        tests:
+          - not_null

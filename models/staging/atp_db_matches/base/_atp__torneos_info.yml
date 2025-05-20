@@ -11,7 +11,7 @@ sources:
 
     tables:
       - name: torneos_info
-        description: "Tabla con datos históricos y geográficos de los torneos ATP, utilizada como referencia base para la generación de claves y modelos intermedios."
+        description: "Tabla con datos históricos y geográficos de los torneos ATP."
 
         columns:
           - name: nombre_torneo

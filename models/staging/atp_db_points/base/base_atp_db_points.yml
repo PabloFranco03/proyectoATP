@@ -1,15 +1,267 @@
 models:
-  - name: base_atp_db_points
+  - name: puntos_grand_slam
     description: >
-    
+      Vista de puntos de partidos de Grand Slam, con granularidad punto a punto.
+      Incluye información detallada del desarrollo de cada jugada, útil para análisis tácticos
+      y estadísticos avanzados.
     columns:
-        - name: id_partido_estadisticas
-          description: ID único de la estadística, generado a partir de 'tourney_id', 'match_num' y el jugador.
-          tests:
-            - not_null
-            - unique
+      - name: match_id
+        description: Identificador del partido.
+        data_type: string
+        tests:
+          - not_null
 
-        - name: id_partido
-          description: Identificador del partido, común entre ganador y perdedor. Derivado de 'tourney_id' y 'match_num'.
-          tests:
-            - not_null
+      - name: tiempo_trancurrido
+        description: Tiempo transcurrido desde el inicio del partido, en segundos.
+        data_type: integer
+
+      - name: numero_set
+        description: Número del set en el que ocurre el punto.
+        data_type: integer
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 1
+
+      - name: p1_juegos_ganados
+        description: Juegos ganados por el jugador 1 en el set actual.
+        data_type: integer
+
+      - name: p2_juegos_ganados
+        description: Juegos ganados por el jugador 2 en el set actual.
+        data_type: integer
+
+      - name: ganador_set
+        description: Jugador que ganó el set (1 o 2).
+        data_type: integer
+        tests:
+          - accepted_values:
+              values: [1, 2]
+
+      - name: numero_juego
+        description: Número del juego dentro del set.
+        data_type: integer
+
+      - name: ganador_juego
+        description: Jugador que ganó el juego (1 o 2).
+        data_type: integer
+        tests:
+          - accepted_values:
+              values: [1, 2]
+
+      - name: numero_punto_partido
+        description: Número del punto desde el inicio del partido.
+        data_type: integer
+
+      - name: ganador_punto
+        description: Jugador que ganó el punto (1 o 2).
+        data_type: integer
+        tests:
+          - accepted_values:
+              values: [1, 2]
+
+      - name: sacador
+        description: Jugador que sirve el punto (1 o 2).
+        data_type: integer
+        tests:
+          - accepted_values:
+              values: [1, 2]
+
+      - name: velocidad_saque_kmh
+        description: Velocidad del saque en km/h.
+        data_type: float
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: rally
+        description: Detalle de los golpes del rally (si está disponible).
+        data_type: string
+
+      - name: p1_score
+        description: Puntuación textual del jugador 1 en el punto (0, 15, 30, 40, AD).
+        data_type: string
+
+      - name: p2_score
+        description: Puntuación textual del jugador 2 en el punto.
+        data_type: string
+
+      - name: puntos_ganados_p1
+        description: Total de puntos ganados por el jugador 1 hasta el momento.
+        data_type: integer
+
+      - name: puntos_ganados_p2
+        description: Total de puntos ganados por el jugador 2 hasta el momento.
+        data_type: integer
+
+      - name: p1_ace
+        description: Si el jugador 1 hizo un ace en el punto (1 = sí, 0 = no).
+        data_type: integer
+
+      - name: p2_ace
+        description: Si el jugador 2 hizo un ace en el punto.
+        data_type: integer
+
+      - name: p1_winner
+        description: Si el jugador 1 ganó el punto con un winner.
+        data_type: integer
+
+      - name: p2_winner
+        description: Si el jugador 2 ganó el punto con un winner.
+        data_type: integer
+
+      - name: p1_double_fault
+        description: Si el jugador 1 cometió una doble falta.
+        data_type: integer
+
+      - name: p2_double_fault
+        description: Si el jugador 2 cometió una doble falta.
+        data_type: integer
+
+      - name: p1_unf_err
+        description: Errores no forzados del jugador 1 en el punto.
+        data_type: integer
+
+      - name: p2_unf_err
+        description: Errores no forzados del jugador 2 en el punto.
+        data_type: integer
+
+      - name: p1_net_point
+        description: Si el jugador 1 subió a la red.
+        data_type: integer
+
+      - name: p2_net_point
+        description: Si el jugador 2 subió a la red.
+        data_type: integer
+
+      - name: p1_net_point_won
+        description: Si el jugador 1 ganó el punto en la red.
+        data_type: integer
+
+      - name: p2_net_point_won
+        description: Si el jugador 2 ganó el punto en la red.
+        data_type: integer
+
+      - name: p1_break_point
+        description: Si el punto fue break point a favor del jugador 1.
+        data_type: integer
+
+      - name: p2_break_point
+        description: Si el punto fue break point a favor del jugador 2.
+        data_type: integer
+
+      - name: p1_break_point_won
+        description: Si el jugador 1 convirtió el break point.
+        data_type: integer
+
+      - name: p2_break_point_won
+        description: Si el jugador 2 convirtió el break point.
+        data_type: integer
+
+      - name: p1_break_point_missed
+        description: Si el jugador 1 falló un break point.
+        data_type: integer
+
+      - name: p2_break_point_missed
+        description: Si el jugador 2 falló un break point.
+        data_type: integer
+
+      - name: indicador_saque
+        description: Indicador del tipo de saque (por ejemplo, primer o segundo).
+        data_type: string
+
+      - name: numero_saque
+        description: Número del saque (1 o 2).
+        data_type: integer
+        tests:
+          - accepted_values:
+              values: [1, 2]
+
+      - name: tipo_winner
+        description: Tipo de golpe ganador.
+        data_type: string
+
+      - name: tipo_golpeo_winner
+        description: Técnica del golpe ganador (forehand, backhand, etc.).
+        data_type: string
+
+      - name: distacia_recorrida_p1
+        description: Distancia recorrida por el jugador 1 en metros.
+        data_type: float
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: distacia_recorrida_p2
+        description: Distancia recorrida por el jugador 2 en metros.
+        data_type: float
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: rally_count
+        description: Número de golpes en el rally.
+        data_type: integer
+
+      - name: lateral_saque
+        description: Ancho del saque (zona donde impactó lateralmente).
+        data_type: string
+
+      - name: profundidad_saque
+        description: Profundidad del saque (zona de caída).
+        data_type: string
+
+      - name: profundidad_resto
+        description: Profundidad del golpe de resto.
+        data_type: string
+
+      - name: ingesta_tmz
+        description: Timestamp de ingesta del dato.
+        data_type: timestamp
+        tests:
+          - not_null
+
+
+#---------------------------------------------------------------------------------------------------------------------------------------------------
+
+  - name: matches_grand_slam
+    description: >
+      Vista filtrada de partidos de Grand Slam masculinos.
+      Incluye identificadores normalizados y limpieza de nombres de jugadores y torneos para
+      unificación con otros modelos.
+    columns:
+      - name: match_id_unificada_gan1
+        description: ID único del partido combinando año, torneo y jugadores (jugador1 vs jugador2).
+        data_type: string
+        tests:
+          - not_null
+
+      - name: match_id_unificada_gan2
+        description: ID único del partido con el orden inverso de jugadores (jugador2 vs jugador1).
+        data_type: string
+        tests:
+          - not_null
+
+      - name: match_id
+        description: Identificador original del partido.
+        data_type: string
+        tests:
+          - not_null
+
+      - name: player1
+        description: Nombre del jugador 1 (formato original).
+        data_type: string
+        tests:
+          - not_null
+
+      - name: player2
+        description: Nombre del jugador 2 (formato original).
+        data_type: string
+        tests:
+          - not_null
+
+      - name: ingesta_tmz
+        description: Timestamp de ingesta de los datos.
+        data_type: timestamp
+        tests:
+          - not_null
+

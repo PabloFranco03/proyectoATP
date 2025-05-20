@@ -51,13 +51,13 @@ cambio_id AS (
             WHEN MAX(p.ganador_juego) = 1 THEN MAX(m.id_player1)
             WHEN MAX(p.ganador_juego) = 2 THEN MAX(m.id_player2)
             ELSE NULL
-        END AS ganador_game_id,
+        END AS ganador_juego_id,
 
         CASE
             WHEN MAX(p.ganador_juego) = 1 THEN MAX(m.id_player2)
             WHEN MAX(p.ganador_juego) = 2 THEN MAX(m.id_player1)
             ELSE NULL
-        END AS perdedor_game_id,
+        END AS perdedor_juego_id,
 
         CASE
             WHEN MIN(p.sacador) = 1 THEN MAX(m.id_player1)
@@ -77,8 +77,8 @@ SELECT
     {{ dbt_utils.generate_surrogate_key(['id_partido', 'numero_set', 'numero_juego']) }} AS id_game,
     {{ dbt_utils.generate_surrogate_key(['id_partido', 'numero_set']) }} AS id_set,
     numero_juego,
-    ganador_game_id,
-    perdedor_game_id,
+    ganador_juego_id,
+    perdedor_juego_id,
     sacador_id,
     ingesta_tmz
 FROM cambio_id

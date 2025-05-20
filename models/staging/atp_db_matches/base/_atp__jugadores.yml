@@ -1,5 +1,3 @@
-version: 2
-
 sources:
   - name: extra_jugadores
     database: ALUMNO26_DEV_BRONZE_DB_ATP

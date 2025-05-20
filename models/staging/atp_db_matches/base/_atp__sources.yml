@@ -17,8 +17,6 @@ sources:
       - name: matches
         description: "Partidos oficiales ATP. Una fila por partido individual del cuadro principal."
 
-        #loaded_at_field: ingestion_timestamp
-
         columns:
           - name: tourney_id
             description: "Identificador único del torneo según base ATP."
@@ -171,7 +169,7 @@ sources:
                   min_value: 10
                   severity: warn
 
-          # Estadísticas del ganador y perdedor — test min_value: 0 se mantiene igual
+          # Estadísticas del ganador y perdedor
           - name: w_ace
             description: "Cantidad de aces del ganador."
             tests: [{ dbt_expectations.expect_column_values_to_be_between: {min_value: 0} }]
@@ -250,6 +248,7 @@ sources:
 
           - name: winner_rank_points
             description: "Cantidad de puntos ATP del ganador al momento del partido."
+            tests: [{ dbt_expectations.expect_column_values_to_be_between: {min_value: 0} }]
 
           - name: loser_rank
             description: "Ranking del perdedor en la fecha del partido."
@@ -257,3 +256,4 @@ sources:
 
           - name: loser_rank_points
             description: "Cantidad de puntos ATP del perdedor al momento del partido."
+            tests: [{ dbt_expectations.expect_column_values_to_be_between: {min_value: 0} }]
