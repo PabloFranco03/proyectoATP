@@ -15,6 +15,9 @@ WITH source AS (
         sets_maximos,
         numero_partido_torneo,
         ingesta_tmz
+
+        --HACER MACROO
+
         -- Número de sets jugados (coincidencias tipo 6-4, 7-6, etc.)
         --REGEXP_COUNT(score, '\d+-\d+') AS sets_jugados,
         -- Sets ganados por el ganador
@@ -40,10 +43,10 @@ mapping AS (
 
 partidos AS (
     SELECT
-        s.*,
-        m.ganador,
-        m.id_player1,
-        m.id_player2
+         s.*  --,
+        -- m.ganador,
+        -- m.id_player1,
+        -- m.id_player2
     FROM source s
     LEFT JOIN mapping m
       ON s.id_partido = m.id_partido

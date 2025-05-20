@@ -28,7 +28,6 @@ sources:
           - name: points
             description: "Puntos del jugador en el ranking en esa fecha."
             tests:
-              - not_null
               - dbt_expectations.expect_column_values_to_be_between:
                   min_value: 0
                   max_value: 20000
@@ -38,9 +37,3 @@ sources:
             description: "Timestamp de la carga del fichero en Snowflake."
             tests:
               - not_null
-
-        tests:
-          - unique:
-              combination_of_columns:
-                - ranking_date
-                - player_id

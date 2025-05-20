@@ -1,0 +1,15 @@
+models:
+  - name: base_atp_db_points
+    description: >
+    
+    columns:
+        - name: id_partido_estadisticas
+          description: ID único de la estadística, generado a partir de 'tourney_id', 'match_num' y el jugador.
+          tests:
+            - not_null
+            - unique
+
+        - name: id_partido
+          description: Identificador del partido, común entre ganador y perdedor. Derivado de 'tourney_id' y 'match_num'.
+          tests:
+            - not_null

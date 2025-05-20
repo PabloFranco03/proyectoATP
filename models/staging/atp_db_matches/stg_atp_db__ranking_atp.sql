@@ -14,7 +14,7 @@ casted AS (
     SELECT
         {{ dbt_utils.generate_surrogate_key(['ranking_date','player_id']) }} AS id_ranking,
         TO_DATE(ranking_date, 'YYYYMMDD') AS ranking_fecha,
-        rank AS posicion,
+        rank AS posicion_ranking,
         {{ dbt_utils.generate_surrogate_key(['player_id']) }} AS id_jugador,
         points AS puntos,
         ingesta_tmz

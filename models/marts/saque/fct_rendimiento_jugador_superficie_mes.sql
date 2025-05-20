@@ -1,6 +1,5 @@
 {{ config(materialized='table') }}
--- cómo hago la tabla incremental si dependo de posibles campos distintos de ingested_tmz?
-
+-- hacer tabla incremental
 
 WITH partidos AS (
     SELECT
@@ -20,7 +19,7 @@ torneos_anio AS (
         id_superficie,
         anio_inicio AS anio,
         mes_inicio AS mes
-    FROM {{ ref('dim__torneo_anio') }}
+    FROM {{ ref('stg_atp_db__torneos_anio') }}
 ),
 
 enriquecido AS (
@@ -30,8 +29,8 @@ enriquecido AS (
         t.anio,
         t.mes,
         e.ha_ganado,
-        e.ace,
-        e.doble_falta,
+        e.aces,
+        e.dobles_faltas,
         e.puntos_saque,
         e.primeros_saques,
         e.puntos_ganados_1er,
@@ -55,11 +54,11 @@ agregado AS (
         SUM(CASE WHEN ha_ganado THEN 1 ELSE 0 END) AS victorias,
         ROUND(SUM(CASE WHEN ha_ganado THEN 1 ELSE 0 END) * 1.0 / COUNT(*), 3) AS ratio_victorias,
 
-        SUM(ace) AS aces_totales,
-        ROUND(AVG(ace), 2) AS aces_promedio,
+        SUM(aces) AS aces_totales,
+        ROUND(AVG(aces), 2) AS aces_promedio,
 
-        SUM(doble_falta) AS dobles_faltas_totales,
-        ROUND(AVG(doble_falta), 2) AS dobles_faltas_promedio,
+        SUM(dobles_faltas) AS dobles_faltas_totales,
+        ROUND(AVG(dobles_faltas), 2) AS dobles_faltas_promedio,
 
         SUM(puntos_saque) AS puntos_saque_totales,
         SUM(primeros_saques) AS primeros_saques_totales,
