@@ -1,6 +1,8 @@
 {{ config(
     materialized='incremental',
-    unique_key='id_partido_estadisticas'
+    unique_key='id_partido_estadisticas',
+    contract={'enforced': true},
+    on_schema_change='append_new_columns'
 ) }}
 
 WITH partidos AS (

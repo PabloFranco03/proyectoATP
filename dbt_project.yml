@@ -29,3 +29,4 @@ models:
       +materialized: table
       +database: ALUMNO26_DEV_GOLD_DB_ATP
       +schema: pfranco
+      +on_schema_change: fail

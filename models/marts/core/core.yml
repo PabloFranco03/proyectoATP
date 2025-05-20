@@ -3,6 +3,9 @@ version: 2
 models:
   - name: dim__torneos
     description: "Dimensión que contiene información básica sobre los torneos de ATP, incluyendo su nombre, país, ciudad, primera edición y estadio principal."
+    config:
+      contract:
+        enforced: true
     columns:
       - name: id_torneo
         description: "Identificador único del torneo."
@@ -10,6 +13,8 @@ models:
         tests:
           - not_null
           - unique
+        constraints:
+          - type: not_null
 
       - name: nombre
         description: "Nombre oficial del torneo."
@@ -38,6 +43,9 @@ models:
 
   - name: dim__superficie
     description: "Dimensión que describe las características de las superficies en las que se juegan los torneos, incluyendo si son rápidas."
+    config:
+      contract:
+        enforced: true
     columns:
       - name: id_superficie
         description: "Identificador único de la superficie."
@@ -45,12 +53,16 @@ models:
         tests:
           - not_null
           - unique
+        constraints:
+          - type: not_null
 
       - name: superficie
         description: "Código o tipo de la superficie (por ejemplo: CLAY, GRASS, HARD)."
         data_type: string
         tests:
           - not_null
+        constraints:
+          - type: not_null
 
       - name: nombre_superficie
         description: "Nombre descriptivo de la superficie."
@@ -61,11 +73,15 @@ models:
         data_type: boolean
 
 
+
 #-----------------------------------------------------------------------------------------------------------------------------------------------ç
 
 
   - name: dim__ronda_torneo
     description: "Dimensión que define las diferentes rondas que componen un torneo, desde clasificatorias hasta la final."
+    config:
+      contract:
+        enforced: true
     columns:
       - name: id_ronda_torneo
         description: "Identificador único de la ronda dentro del torneo."
@@ -73,16 +89,21 @@ models:
         tests:
           - not_null
           - unique
+        constraints:
+          - type: not_null
 
       - name: ronda_torneo
         description: "Código o abreviación de la ronda del torneo (por ejemplo: QF, SF, F)."
         data_type: string
         tests:
           - not_null
+        constraints:
+          - type: not_null
 
       - name: ronda_torneo_desc
         description: "Descripción completa de la ronda del torneo."
         data_type: string
+
 
 
 #---------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -90,6 +111,9 @@ models:
 
   - name: dim__nivel_torneo
     description: "Dimensión que clasifica los torneos según su nivel de importancia en el circuito ATP (por ejemplo: ATP 250, ATP 500, Masters 1000, Grand Slam)."
+    config:
+      contract:
+        enforced: true
     columns:
       - name: id_nivel_torneo
         description: "Identificador único del nivel del torneo."
@@ -97,16 +121,21 @@ models:
         tests:
           - not_null
           - unique
+        constraints:
+          - type: not_null
 
       - name: nivel_torneo
         description: "Código del nivel del torneo (por ejemplo: 250, 500, M1000, GS)."
         data_type: string
         tests:
           - not_null
+        constraints:
+          - type: not_null
 
       - name: nivel_torneo_desc
         description: "Descripción completa del nivel del torneo."
         data_type: string
+
 
 
 #-------------------------------------------------------------------------------------------------------------------------------------------------
@@ -114,6 +143,9 @@ models:
 
   - name: dim__jugadores
     description: "Dimensión que contiene información sobre los jugadores de tenis, incluyendo su nacionalidad, altura y mano dominante."
+    config:
+      contract:
+        enforced: true
     columns:
       - name: id_jugador
         description: "Identificador único del jugador."
@@ -121,12 +153,16 @@ models:
         tests:
           - not_null
           - unique
+        constraints:
+          - type: not_null
 
       - name: nombre_jugador
         description: "Nombre completo del jugador."
         data_type: string
         tests:
           - not_null
+        constraints:
+          - type: not_null
 
       - name: mano_dominante
         description: "Código de la mano dominante del jugador (R para diestro, L para zurdo, U para desconocido)."
@@ -149,11 +185,15 @@ models:
         data_type: string
 
 
+
 #--------------------------------------------------------------------------------------------------------------------------------------------
 
 
   - name: dim__fecha
     description: "Dimensión de fechas que proporciona atributos temporales para análisis a nivel de día, incluyendo año, mes, día de la semana y nombres correspondientes."
+    config:
+      contract:
+        enforced: true
     columns:
       - name: fecha
         description: "Fecha en formato calendario (clave primaria natural)."
@@ -161,24 +201,32 @@ models:
         tests:
           - not_null
           - unique
+        constraints:
+          - type: not_null
 
       - name: anio
         description: "Año correspondiente a la fecha."
         data_type: integer
         tests:
           - not_null
+        constraints:
+          - type: not_null
 
       - name: mes
         description: "Número del mes (1-12) correspondiente a la fecha."
         data_type: integer
         tests:
           - not_null
+        constraints:
+          - type: not_null
 
       - name: dia
         description: "Día del mes correspondiente a la fecha."
         data_type: integer
         tests:
           - not_null
+        constraints:
+          - type: not_null
 
       - name: dia_semana
         description: "Número del día de la semana (1=domingo, 7=sábado, depende del estándar usado)."
@@ -198,6 +246,9 @@ models:
 
   - name: dim_torneo_anio
     description: "Dimensión que representa la realización de un torneo en un año específico, incluyendo superficie, nivel, fecha de inicio y cantidad de jugadores."
+    config:
+      contract:
+        enforced: true
     columns:
       - name: id_torneo_anio
         description: "Identificador único del torneo en un año determinado."
@@ -205,6 +256,8 @@ models:
         tests:
           - not_null
           - unique
+        constraints:
+          - type: not_null
 
       - name: id_torneo
         description: "Identificador del torneo base."
@@ -214,6 +267,8 @@ models:
           - relationships:
               to: ref('dim_torneo')
               field: id_torneo
+        constraints:
+          - type: not_null
 
       - name: id_superficie
         description: "Identificador de la superficie en la que se juega el torneo ese año."
@@ -223,6 +278,8 @@ models:
           - relationships:
               to: ref('dim_superficie')
               field: id_superficie
+        constraints:
+          - type: not_null
 
       - name: id_nivel_torneo
         description: "Identificador del nivel del torneo para ese año."
@@ -232,6 +289,8 @@ models:
           - relationships:
               to: ref('dim_nivel_torneo')
               field: id_nivel_torneo
+        constraints:
+          - type: not_null
 
       - name: fecha_inicio
         description: "Fecha de inicio del torneo en el año correspondiente."
@@ -255,6 +314,9 @@ models:
 
   - name: dim__ranking_atp
     description: "Tabla de hechos que registra la posición en el ranking ATP de cada jugador en fechas específicas, junto con los puntos obtenidos."
+    config:
+      contract:
+        enforced: true
     columns:
       - name: id_ranking
         description: "Identificador único del registro de ranking."
@@ -262,6 +324,8 @@ models:
         tests:
           - not_null
           - unique
+        constraints:
+          - type: not_null
 
       - name: ranking_fecha
         description: "Fecha en la que se registró el ranking."
@@ -279,6 +343,8 @@ models:
           - relationships:
               to: ref('dim_jugador')
               field: id_jugador
+        constraints:
+          - type: not_null
 
       - name: puntos
         description: "Cantidad de puntos ATP que tiene el jugador en esa fecha."
@@ -287,13 +353,16 @@ models:
       - name: ingesta_tmz
         description: "Marca de tiempo de la ingesta del dato, usada para incrementalidad."
         data_type: timestamp
-
+ 
 
 #--------------------------------------------------------------------------------------------------------------------------------------------
 
 
   - name: fct__estadisticas_jugador_partido
     description: "Tabla de hechos con estadísticas detalladas de desempeño por jugador en cada partido, incluyendo saques, puntos y break points."
+    config:
+      contract:
+        enforced: true
     columns:
       - name: id_partido_estadisticas
         description: "Identificador único del conjunto de estadísticas del jugador en un partido."
@@ -301,12 +370,16 @@ models:
         tests:
           - not_null
           - unique
+        constraints:
+          - type: not_null
 
       - name: id_partido
         description: "Identificador del partido al que pertenecen estas estadísticas."
         data_type: integer
         tests:
           - not_null
+        constraints:
+          - type: not_null
 
       - name: id_jugador
         description: "Identificador del jugador al que pertenecen estas estadísticas."
@@ -316,6 +389,8 @@ models:
           - relationships:
               to: ref('dim_jugador')
               field: id_jugador
+        constraints:
+          - type: not_null
 
       - name: ha_ganado
         description: "Indicador de si el jugador ganó el partido."
