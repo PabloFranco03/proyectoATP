@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: partidos
+  - name: base_atp_db__matches
     description: >
       Vista que contiene los partidos filtrados por torneos relevantes del circuito ATP,
       enriquecida con identificadores únicos y limpieza de nombres para análisis posterior.
@@ -387,7 +387,7 @@ models:
 #-------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-  - name: jugadores
+  - name: base_atp_db__jugadores
     description: >
       Vista de jugadores ATP con información básica como nombre, fecha de nacimiento,
       nacionalidad y altura, proveniente de una fuente externa y transformada para análisis.
@@ -454,7 +454,7 @@ models:
 
 #--------------------------------------------------------------------------------------------------------------------------------------------------
 
-  - name: torneos_info
+  - name: base_atp_db__torneos_info
     description: >
       Vista que contiene información básica de los torneos ATP, incluyendo nombre,
       país, ciudad, estadio y año de la primera edición.

@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: sets
+  - name: stg_atp_db__sets
     description: >
       Modelo incremental que resume información a nivel de set para partidos de Grand Slam,
       incluyendo identificadores de jugadores y sets, marcador parcial y lógica de mapeo con IDs
@@ -74,7 +74,7 @@ models:
 #--------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-  - name: juegos
+  - name: stg_atp_db__juegos
     description: >
       Modelo incremental que resume información a nivel de juego para partidos de Grand Slam.
       Incluye identificadores únicos de juego, set y partido, así como jugadores involucrados
@@ -129,7 +129,7 @@ models:
 #---------------------------------------------------------------------------------------------------------------------------------------------
 
 
-  - name: puntos
+  - name: stg_atp_db__puntos
     description: >
       Modelo incremental que registra cada punto jugado en partidos de Grand Slam.
       Incluye el marcador al momento del saque, el jugador que ganó el punto, la duración del rally
@@ -191,7 +191,7 @@ models:
 #---------------------------------------------------------------------------------------------------------------------------------------------
 
 
-  - name: estadisticas_punto_jug
+  - name: stg_atp_db__estadisticas_punto_jug
     description: >
       Modelo incremental que transforma puntos de partidos de Grand Slam en una vista longitudinal
       por jugador. Incluye estadísticas ofensivas, defensivas y contextuales de cada jugador en cada punto.

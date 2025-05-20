@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: torneos
+  - name: stg_atp_db__torneos
     description: >
       Dimensión que combina información básica de torneos jugados con metadatos históricos
       y geográficos provenientes de la tabla de torneos. Útil para análisis por sede, país o antigüedad.
@@ -43,7 +43,7 @@ models:
 #----------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-  - name: torneos_anio
+  - name: stg_atp_db__torneos_anio
     description: >
       Dimensión que resume información de cada edición de torneo por año.
       Incluye identificadores del torneo, superficie, nivel, fecha de inicio y tamaño del cuadro.
@@ -107,7 +107,7 @@ models:
 #--------------------------------------------------------------------------------------------------------------------------------------------
 
 
-  - name: nivel_torneo
+  - name: stg_atp_db__nivel_torneo
     description: >
       Dimensión que referencia los distintos niveles de torneo en el circuito ATP,
       transformando los códigos (`nivel_torneo`) en descripciones legibles.
@@ -137,7 +137,7 @@ models:
 #---------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-  - name: ronda_torneo
+  - name: stg_atp_db__ronda_torneo
     description: >
       Dimensión que traduce los códigos de ronda de torneo a descripciones legibles,
       permitiendo una mejor interpretación en análisis y dashboards.
@@ -167,7 +167,7 @@ models:
 #---------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-  - name: superficies
+  - name: stg_atp_db__superficie
     description: >
       Dimensión que categoriza las superficies de torneo, incluyendo descripciones legibles
       y una clasificación boolean de si la superficie es considerada rápida.
@@ -203,7 +203,7 @@ models:
 #------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-  - name: jugadores
+  - name: stg_atp_db__jugadores
     description: >
       Dimensión consolidada de jugadores a partir de partidos como ganadores o perdedores, enriquecida
       con metadatos personales (país, fecha de nacimiento, wikidata). Incluye un registro vacío como fallback.
@@ -260,7 +260,7 @@ models:
 #---------------------------------------------------------------------------------------------------------------------------------------------
 
 
-  - name: ranking_atp
+  - name: stg_atp_db__ranking_atp
     description: >
       Modelo incremental que contiene el historial del ranking ATP por jugador y fecha.
       Incluye posición, puntos y claves de identificación, útil para análisis temporales
@@ -310,7 +310,7 @@ models:
 #-----------------------------------------------------------------------------------------------------------------------------------------------ç
 
 
-  - name: partidos
+  - name: stg_atp_db__partidos
     description: >
       Tabla de hechos con los partidos ATP, incluyendo duración, resultado, sets máximos,
       jugadores involucrados y metadatos de torneo. Diseñada como modelo incremental.
@@ -384,7 +384,7 @@ models:
 #---------------------------------------------------------------------------------------------------------------------------------------------
 
 
-  - name: estadisticas_partido_jug
+  - name: stg_atp_db__estadisticas_partido_jug
     description: >
       Vista longitudinal que transforma las estadísticas de partido en registros por jugador.
       Incluye indicadores de saque, puntos ganados y presión (break points), diferenciando
@@ -462,3 +462,47 @@ models:
         data_type: timestamp
         tests:
           - not_null
+
+
+#--------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+  - name: stg__date
+    description: "Dimensión de fechas generada con dbt_utils.date_spine, útil para análisis temporales diarios desde el año 2000 hasta el 2029."
+    columns:
+      - name: date
+        description: "Fecha calendario (clave primaria natural)."
+        data_type: date
+        tests:
+          - not_null
+          - unique
+
+      - name: anio
+        description: "Año correspondiente a la fecha."
+        data_type: integer
+        tests:
+          - not_null
+
+      - name: mes
+        description: "Número del mes (1 a 12) correspondiente a la fecha."
+        data_type: integer
+        tests:
+          - not_null
+
+      - name: dia
+        description: "Día del mes correspondiente a la fecha."
+        data_type: integer
+        tests:
+          - not_null
+
+      - name: dia_semana
+        description: "Día de la semana como número (1=domingo, 7=sábado en Snowflake)."
+        data_type: integer
+
+      - name: mes_nombre
+        description: "Nombre del mes en letras (por ejemplo: enero, febrero)."
+        data_type: string
+
+      - name: dia_nombre
+        description: "Nombre abreviado del día de la semana (por ejemplo: lun, mar)."
+        data_type: string

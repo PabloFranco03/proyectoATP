@@ -47,7 +47,6 @@ partido_jugador AS (
         p.resultado,
         p.sets_maximos,
         p.numero_partido_torneo,
-        {{ aniadir_campos_resultado('p.resultado') }},
         p.ingesta_tmz
     FROM estadisticas e
     LEFT JOIN partidos p
