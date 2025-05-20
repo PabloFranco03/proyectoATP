@@ -1,12 +1,12 @@
 WITH raw_matches AS (
-    SELECT 
-    tourney_id,
-    nombre_torneo, 
+    SELECT
+    id_torneo_anio,
+    id_torneo,
     id_superficie, 
-    nivel_torneo,
+    id_nivel_torneo,
     fecha_inicio,
     total_jugadores 
-    FROM {{ source('atp', 'matches') }}
+    FROM {{ ref('base_atp_db__matches') }}
 ),
 
 campos_torneo_anio AS (
@@ -16,8 +16,8 @@ campos_torneo_anio AS (
         id_superficie,
         id_nivel_torneo,        
         fecha_inicio,
-        CAST(TO_CHAR(TO_DATE(fecha_inicio, 'YYYYMMDD'), 'YYYY') AS INT) AS anio_inicio,
-        CAST(TO_CHAR(TO_DATE(fecha_inicio, 'YYYYMMDD'), 'MM') AS INT) AS mes_inicio,
+        EXTRACT(YEAR FROM fecha_inicio) AS anio_inicio,
+        EXTRACT(MONTH FROM fecha_inicio) AS mes_inicio,
         total_jugadores 
     FROM raw_matches
 )

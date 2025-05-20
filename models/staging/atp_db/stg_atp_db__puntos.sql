@@ -1,6 +1,6 @@
 {{ config(
     materialized = 'incremental',
-    unique_key = 'id_partido || '-' || numero_punto_partido'
+    unique_key = ''
 ) }}
 
 WITH puntos AS (
@@ -13,7 +13,7 @@ WITH puntos AS (
         p1_score,
         p2_score,
         ingesta_tmz
-    FROM {{ ref('base_extra_grand_slam__puntos_gran_slam') }}
+    FROM {{ ref('base_atp_db__points_gran_slam') }}
     WHERE numero_punto_partido IS NOT NULL
 ),
 
@@ -23,7 +23,7 @@ mapping AS (
         id_partido,
         id_player1,
         id_player2
-    FROM {{ ref('int_match_id_mapping') }}
+    FROM {{ ref('int__union_ids') }}
 )
 
 SELECT

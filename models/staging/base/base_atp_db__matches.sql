@@ -7,13 +7,15 @@
 with source as (
     select *
     from {{ source('atp', 'matches') }}
-    where {{ filtrado_copa_davis('tourney_level') }}
+    where {{ filtrado_copa_davis_y_finals('tourney_level') }}
 ),
 
 partidos AS (
     SELECT
 
         {{ dbt_utils.generate_surrogate_key(['tourney_id']) }} AS id_torneo_anio,
+        {{ dbt_utils.generate_surrogate_key(['tourney_id', 'match_num', 'winner_id']) }} AS id_partido_estadisticas_gan,
+        {{ dbt_utils.generate_surrogate_key(['tourney_id', 'match_num', 'loser_id']) }} AS id_partido_estadisticas_per,
         {{ dbt_utils.generate_surrogate_key(['tourney_id', 'match_num']) }} AS id_partido,
         {{ dbt_utils.generate_surrogate_key([limpiar_texto("tourney_name")]) }} AS id_torneo,
         tourney_name AS nombre_torneo,

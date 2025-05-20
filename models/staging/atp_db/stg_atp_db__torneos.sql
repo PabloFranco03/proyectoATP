@@ -1,7 +1,7 @@
 {{ config(materialized='table') }}
 
 WITH torneo_base AS (
-    SELECT 
+    SELECT DISTINCT
     id_torneo,
     nombre_torneo,
     FROM {{ ref('base_atp_db__matches') }}

@@ -1,11 +1,11 @@
 {{ config(
     materialized = 'incremental',
-    unique_key = 'id_partido || '-' || id_punto || '-' || id_jugador'
+    unique_key = ''
 ) }}
 
 WITH puntos AS (
     SELECT *
-    FROM {{ ref('stg_points_gran_slam') }}
+    FROM {{ ref('base_atp_db__points_gran_slam') }}
     WHERE id_partido IS NOT NULL
 ),
 

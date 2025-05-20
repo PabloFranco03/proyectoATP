@@ -1,22 +1,21 @@
 WITH source AS (
     SELECT
-    winner_id, 
+    id_ganador, 
     winner_name, 
     winner_hand,
     winner_ht,
     winner_ioc,
-    loser_id,
+    id_perdedor,
     loser_name,
     loser_hand,
     loser_ht,
     loser_ioc
-    FROM {{ source('atp', 'matches') }}
-    WHERE {{ filtrado_copa_davis('tourney_level') }}
+    FROM {{ ref("base_atp_db__matches") }}
 ),
 
 ganadores AS (
     SELECT DISTINCT
-        winner_id AS id_jugador,
+        id_ganador AS id_jugador,
         winner_name AS nombre_jugador,
         winner_hand AS mano_dominante,
         winner_ht AS altura_cm,
@@ -26,7 +25,7 @@ ganadores AS (
 
 perdedores AS (
     SELECT DISTINCT
-        loser_id AS id_jugador,
+        id_perdedor AS id_jugador,
         loser_name AS nombre_jugador,
         loser_hand AS mano_dominante,
         loser_ht AS altura_cm,
@@ -42,7 +41,7 @@ jugadores_union AS (
 
 registro_vacio AS (
     SELECT
-        -1 AS id_jugador, 
+        '-1' AS id_jugador, 
         'Desconocido' AS nombre_jugador,
         NULL AS mano_dominante,
         NULL AS altura_cm,
@@ -61,7 +60,7 @@ ioc_paises AS (
 ),
 
 jugadores_base AS (
-    SELECT player_id, fecha_nacimiento, wikidata_id
+    SELECT id_jugador, fecha_nacimiento, wikidata_id
     FROM {{ ref('base_atp_db__jugadores') }}
 )
 
@@ -78,4 +77,4 @@ FROM union_total j
 LEFT JOIN ioc_paises p
     ON j.cod_pais = p.cod_ioc
 LEFT JOIN jugadores_base b
-    ON j.id_jugador = b.player_id
+    ON j.id_jugador = b.id_jugador

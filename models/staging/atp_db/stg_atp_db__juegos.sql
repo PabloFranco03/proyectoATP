@@ -1,6 +1,8 @@
+--hacer bien incremental
+
 {{ config(
     materialized = 'incremental',
-    unique_key = 'id_partido || '-' || numero_set || '-' || numero_juego'
+    unique_key = ''
 ) }}
 
 WITH puntos AS (
@@ -10,13 +12,13 @@ WITH puntos AS (
         numero_juego,
         ganador_juego,
         sacador
-    FROM {{ ref('base_extra_grand_slam__puntos_gran_slam') }}
+    FROM {{ ref('base_atp_db__points_gran_slam') }}
     WHERE ganador_juego != 0
 ),
 
 mapping AS (
     SELECT id_partido_otro, id_partido
-    FROM {{ ref('int_match_id_mapping') }}
+    FROM {{ ref('int__union_ids') }}
 )
 
 SELECT

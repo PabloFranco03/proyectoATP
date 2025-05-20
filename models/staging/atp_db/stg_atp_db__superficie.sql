@@ -5,26 +5,31 @@ WITH raw_matches AS (
     id_superficie,
     superficie
     FROM {{ ref("base_atp_db__matches") }}
+),
+
+enriquecida AS (
+    SELECT DISTINCT
+        id_superficie,
+        superficie,
+
+        CASE superficie
+            WHEN 'Clay' THEN 'Tierra batida'
+            WHEN 'Hard' THEN 'Dura'
+            WHEN 'Grass' THEN 'Hierba'
+            WHEN 'Carpet' THEN 'Moqueta'
+            ELSE 'Desconocida'
+        END AS nombre_superficie,
+
+        CASE superficie
+            WHEN 'Hard' THEN TRUE
+            WHEN 'Grass' THEN TRUE
+            WHEN 'Carpet' THEN TRUE
+            WHEN 'Clay' THEN FALSE
+            ELSE NULL
+        END AS es_rapida
+
+    FROM raw_matches
 )
 
-SELECT DISTINCT
-    id_superficie,
-    superficie,
-
-    CASE superficie
-        WHEN 'Clay' THEN 'Tierra batida'
-        WHEN 'Hard' THEN 'Dura'
-        WHEN 'Grass' THEN 'Hierba'
-        WHEN 'Carpet' THEN 'Moqueta'
-        ELSE 'Desconocida'
-    END AS nombre_superficie,
-
-    CASE superficie
-        WHEN 'Hard' THEN TRUE
-        WHEN 'Grass' THEN TRUE
-        WHEN 'Carpet' THEN TRUE
-        WHEN 'Clay' THEN FALSE
-        ELSE NULL
-    END AS es_rapida
-
-FROM raw_matches
+SELECT * 
+FROM enriquecida

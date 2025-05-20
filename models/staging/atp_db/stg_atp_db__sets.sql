@@ -9,13 +9,13 @@ WITH puntos AS (
         p1_juegos_ganados,
         p2_juegos_ganados,
         ganador_set
-    FROM {{ ref('base_atp_db__puntos_gran_slam') }}
+    FROM {{ ref('base_atp_db__points_gran_slam') }}
     WHERE ganador_set != 0
 ),
 
 mapping AS (
     SELECT id_partido_otro, id_partido
-    FROM {{ ref('int_match_id_mapping') }}
+    FROM {{ ref('int__union_ids') }}
 )
 
 SELECT

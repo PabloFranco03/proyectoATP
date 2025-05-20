@@ -6,15 +6,14 @@
 
 with source AS (
     SELECT *
-    FROM {{ source('atp', 'matches') }}
-    WHERE {{ filtrado_copa_davis('tourney_level') }}
+    FROM {{ ref("base_atp_db__matches") }}
 ),
 
 ganador AS (
     SELECT
-        {{ dbt_utils.generate_surrogate_key(['tourney_id', 'match_num', 'winner_id']) }} AS id_partido_estadisticas,
-        {{ dbt_utils.generate_surrogate_key(['tourney_id', 'match_num']) }} AS id_partido,
-        {{ dbt_utils.generate_surrogate_key(['winner_id']) }} AS id_jugador,
+        id_partido_estadisticas_gan AS id_partido_estadisticas,
+        id_partido,
+        id_ganador AS id_jugador,
         TRUE AS ha_ganado,
         w_ace AS aces,
         w_df AS dobles_faltas,
@@ -31,9 +30,9 @@ ganador AS (
 
 perdedor AS (
     SELECT
-        {{ dbt_utils.generate_surrogate_key(['tourney_id', 'match_num', 'loser_id']) }} AS id_partido_estadisticas,
-        {{ dbt_utils.generate_surrogate_key(['tourney_id', 'match_num']) }} AS id_partido,
-        {{ dbt_utils.generate_surrogate_key(['loser_id']) }} AS id_jugador,
+        id_partido_estadisticas_per AS id_partido_estadisticas,
+        id_partido,
+        id_perdedor AS id_jugador,
         FALSE AS ha_ganado,
         l_ace AS aces,
         l_df AS dobles_faltas,
