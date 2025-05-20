@@ -51,7 +51,7 @@ renamed AS(
         winner_shot_type AS tipo_golpeo_winner,
         p1_distance_run AS distacia_recorrida_p1,
         p2_distance_run AS distacia_recorrida_p2,
-        rally_count AS golpes,
+        rally_count,
         serve_width AS lateral_saque ,
         serve_depth AS profundidad_saque,
         return_depth AS profundidad_resto,

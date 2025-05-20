@@ -1,17 +1,18 @@
 {{ config(
-    materialized = 'incremental',
-    unique_key = ''
+    materialized='incremental',
+    unique_key='id_punto'
 ) }}
 
 WITH puntos AS (
     SELECT
         match_id,
-        numero_juego AS id_juego,
-        numero_punto_partido AS id_punto,
-        ganador_punto AS punto_winner,
-        rally,
+        numero_set,
+        numero_juego,
+        numero_punto_partido,
+        ganador_punto,
         p1_score,
         p2_score,
+        rally_count,
         ingesta_tmz
     FROM {{ ref('base_atp_db__points_gran_slam') }}
     WHERE numero_punto_partido IS NOT NULL
@@ -24,21 +25,36 @@ mapping AS (
         id_player1,
         id_player2
     FROM {{ ref('int__union_ids') }}
+),
+
+limpio AS (
+    SELECT
+        {{ dbt_utils.generate_surrogate_key(['m.id_partido', 'p.numero_set', 'p.numero_juego']) }} AS id_game,
+        {{ dbt_utils.generate_surrogate_key(['m.id_partido', 'p.numero_punto_partido']) }} AS id_punto,
+        p.numero_punto_partido AS num_punto_partido,
+        p.rally_count,
+        CONCAT(p.p1_score, '-', p.p2_score) AS resultado_momento_saque,
+
+        CASE
+            WHEN p.ganador_punto = 1 THEN m.id_player1
+            WHEN p.ganador_punto = 2 THEN m.id_player2
+            ELSE NULL
+        END AS punto_winner,
+
+        CASE
+            WHEN p.ganador_punto = 1 THEN m.id_player2
+            WHEN p.ganador_punto = 2 THEN m.id_player1
+            ELSE NULL
+        END AS punto_loser,
+
+        p.ingesta_tmz
+    FROM puntos p
+    LEFT JOIN mapping m
+      ON p.match_id = m.id_partido_otro
 )
 
-SELECT
-    m.id_partido,
-    p.id_juego,
-    p.id_punto,
-    p.punto_winner,
-    CASE 
-        WHEN p.punto_winner = 1 THEN m.id_player2
-        WHEN p.punto_winner = 2 THEN m.id_player1
-        ELSE NULL
-    END AS punto_loser,
-    p.rally,
-    CONCAT(p.p1_score, '-', p.p2_score) AS resultado_momento_saque,
-    p.ingesta_tmz
-FROM puntos p
-LEFT JOIN mapping m
-  ON p.match_id = m.id_partido_otro
+SELECT *
+FROM limpio
+{% if is_incremental() %}
+  WHERE ingesta_tmz > (SELECT MAX(ingesta_tmz) FROM {{ this }})
+{% endif %}
