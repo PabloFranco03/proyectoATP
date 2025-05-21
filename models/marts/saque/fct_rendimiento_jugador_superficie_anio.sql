@@ -1,10 +1,3 @@
-{{ config(
-    materialized='incremental',
-    unique_key='',
-) }}
-
---añadir if incremental
-
 WITH partidos_jugador AS (
     SELECT *
     FROM {{ ref('fct__estadisticas_jugador_partido') }}
@@ -106,6 +99,4 @@ LEFT JOIN superficie s ON r.id_superficie = s.id_superficie
 
 SELECT *
 FROM todos 
--- {% if is_incremental() %}
---   WHERE ingesta_tmz > (SELECT MAX(ingesta_tmz) FROM {{ this }})
--- {% endif %}
+

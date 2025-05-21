@@ -1,6 +1,6 @@
 {{ config(
     materialized = 'incremental',
-    unique_key = 'id_game',
+    unique_key = 'id_juego',
 ) }}
 
 WITH juegos_base AS (

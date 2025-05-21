@@ -1,7 +1,3 @@
-{{ config(
-    materialized = 'table'
-) }}
-
 WITH puntos_saque AS (
     SELECT *
     FROM {{ ref('fct__estadisticas_punto_jugador') }}
@@ -10,8 +6,6 @@ WITH puntos_saque AS (
 
 resumen AS (
     SELECT
-        id_jugador,
-        id_torneo_anio,
 
         COUNT(*) AS total_puntos_saque,
 
@@ -29,7 +23,6 @@ resumen AS (
         SUM(CASE WHEN rally_count <= 3 THEN 1 ELSE 0 END) AS total_rally_corto,
         SUM(CASE WHEN rally_count >= 5 THEN 1 ELSE 0 END) AS total_rally_largo,
         SUM(CASE WHEN rally_count = 3 THEN 1 ELSE 0 END) AS total_rally_3,
-        SUM(CASE WHEN rally_count = 3 AND ha_ganado THEN 1 ELSE 0 END) AS rally_3_ganados,
 
         SUM(CASE WHEN numero_saque = 1 THEN 1 ELSE 0 END) AS total_saques_1,
         SUM(CASE WHEN numero_saque = 2 THEN 1 ELSE 0 END) AS total_saques_2,
@@ -40,7 +33,10 @@ resumen AS (
         AVG(CASE WHEN numero_saque = 1 AND velocidad_saque > 0 THEN velocidad_saque END) AS vel_media_1er_saque,
         AVG(CASE WHEN numero_saque = 2 AND velocidad_saque > 0 THEN velocidad_saque END) AS vel_media_2do_saque,
         AVG(distancia_recorrida) AS media_distancia_recorrida,
-        AVG(rally_count) AS media_rally_count
+        AVG(rally_count) AS media_rally_count,
+
+        id_jugador,
+        id_torneo_anio
 
     FROM puntos_saque
     GROUP BY id_jugador, id_torneo_anio
@@ -68,12 +64,12 @@ nivel_torneo AS (
 
 enriquecido AS (
     SELECT
-        r.*,
         j.nombre_jugador,
         ta.anio_inicio AS anio,
         s.nombre_superficie,
-        s.es_rapida,
-        nt.nivel_torneo
+        nt.nivel_torneo,
+        r.*,
+        s.es_rapida
     FROM resumen r
     LEFT JOIN jugadores j ON r.id_jugador = j.id_jugador
     LEFT JOIN torneo_anio ta ON r.id_torneo_anio = ta.id_torneo_anio
@@ -90,11 +86,10 @@ SELECT
     CASE WHEN total_puntos_saque = 0 THEN NULL ELSE total_errores_nf / total_puntos_saque END AS pct_errores_nf,
     CASE WHEN total_puntos_saque = 0 THEN NULL ELSE total_subidas_red / total_puntos_saque END AS pct_sube_red,
     CASE WHEN total_subidas_red = 0 THEN NULL ELSE total_puntos_ganados_en_red / total_subidas_red END AS pct_efectividad_en_red,
-    CASE WHEN total_bp_oportunidades = 0 THEN NULL ELSE total_bp_convertidos / total_bp_oportunidades END AS pct_bp_convertidos,
-    CASE WHEN total_bp_oportunidades = 0 THEN NULL ELSE total_bp_fallados / total_bp_oportunidades END AS pct_bp_fallados,
     CASE WHEN total_puntos_saque = 0 THEN NULL ELSE total_rally_corto / total_puntos_saque END AS pct_rally_corto,
     CASE WHEN total_puntos_saque = 0 THEN NULL ELSE total_rally_largo / total_puntos_saque END AS pct_rally_largo,
     CASE WHEN total_puntos_saque = 0 THEN NULL ELSE total_puntos_ganados / total_puntos_saque END AS pct_puntos_ganados_saque,
-    CASE WHEN total_rally_3 = 0 THEN NULL ELSE rally_3_ganados / total_rally_3 END AS pct_ganados_rally_3
 
 FROM enriquecido
+
+where anio is not null
