@@ -3,7 +3,7 @@
     unique_key='',
 ) }}
 
--- añadir if incremental
+--añadir if incremental
 
 WITH partidos_jugador AS (
     SELECT *
@@ -68,14 +68,20 @@ ranking_final_anio AS (
 jugadores AS (
     SELECT id_jugador, altura_cm
     FROM {{ ref('dim__jugadores') }}
+),
+
+superficie AS (
+    SELECT id_superficie, nombre_superficie
+    FROM {{ ref('dim__superficie') }}
 )
 
 SELECT
     r.*,
     j.altura_cm,
     rk.posicion_ranking,
+    s.nombre_superficie,
 
-    -- Métricas porcentuales y derivadas
+    -- Métricas derivadas
     SAFE_DIVIDE(total_primeros_saques, total_puntos_saque) AS pct_primeros_saques_adentro,
     SAFE_DIVIDE(total_puntos_saque - total_primeros_saques, total_puntos_saque) AS pct_segundos_saques_jugados,
     SAFE_DIVIDE(total_puntos_ganados_1er, total_primeros_saques) AS pct_puntos_ganados_1er,
@@ -94,3 +100,4 @@ SELECT
 FROM resumen r
 LEFT JOIN jugadores j ON r.id_jugador = j.id_jugador
 LEFT JOIN ranking_final_anio rk ON r.id_jugador = rk.id_jugador AND r.anio = rk.anio
+LEFT JOIN superficie s ON r.id_superficie = s.id_superficie
