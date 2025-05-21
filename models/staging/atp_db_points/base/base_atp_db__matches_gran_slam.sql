@@ -7,7 +7,8 @@
 WITH raw AS (
     SELECT *
     FROM {{ source('extra_grand_slam', 'matches_grand_slam') }}
-    WHERE LEFT(CAST(match_num AS STRING), 1) = '1'
+    WHERE LEFT(CAST(match_num AS STRING), 1) = '1' 
+
 ),
 
 casted AS (

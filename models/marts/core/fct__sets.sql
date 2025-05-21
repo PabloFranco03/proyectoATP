@@ -6,6 +6,7 @@
 WITH sets_base AS (
     SELECT *
     FROM {{ ref('stg_atp_db__sets') }}
+    WHERE id_partido IS NOT NULL
 ),
 
 sets_enriquecidos AS (

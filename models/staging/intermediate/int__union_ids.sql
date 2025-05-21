@@ -10,8 +10,8 @@ WITH partidos AS (
         b2.match_id AS match_id_gran_slam_gan2,
         b1.match_id_unificada_gan1,
         b2.match_id_unificada_gan2,
-        b1.player1 AS player1_b1,
-        b2.player2 AS player2_b2
+        b1.player1,
+        b1.player2
     FROM {{ ref('base_atp_db__matches') }} m
     LEFT JOIN {{ ref('base_atp_db__matches_gran_slam') }} b1
         ON m.match_id_unificada = b1.match_id_unificada_gan1
@@ -22,12 +22,14 @@ WITH partidos AS (
 SELECT
     COALESCE(match_id_gran_slam_gan1, match_id_gran_slam_gan2) AS id_partido_otro,
     id_partido,
+    id_ganador,
+    id_perdedor,
 
-    CASE 
-        WHEN match_id_unificada = match_id_unificada_gan1 THEN player1_b1
-        WHEN match_id_unificada = match_id_unificada_gan2 THEN player2_b2
-        ELSE NULL 
-    END AS ganador,
+    -- CASE 
+    --     WHEN match_id_unificada = match_id_unificada_gan1 THEN player1
+    --     WHEN match_id_unificada = match_id_unificada_gan2 THEN player2
+    --     ELSE NULL 
+    -- END AS ganador,
 
     CASE 
         WHEN match_id_unificada = match_id_unificada_gan1 THEN id_ganador

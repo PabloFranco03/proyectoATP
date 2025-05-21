@@ -5,7 +5,7 @@
 WITh raw AS (
     SELECT *
     from {{ source('extra_grand_slam', 'puntos_grand_slam') }}
-    WHERE LEFT(SPLIT_PART(match_id, '-', 3), 1) != 2
+    WHERE LEFT(SPLIT_PART(match_id, '-', 3), 1) != 2 
 ),
 
 renamed AS(

@@ -6,6 +6,7 @@
 WITH juegos_base AS (
     SELECT *
     FROM {{ ref('stg_atp_db__juegos') }}
+    WHERE ganador_juego_id IS NOT NULL
 ),
 
 juegos_enriquecidos AS (

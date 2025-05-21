@@ -6,11 +6,13 @@
 WITH puntos_base AS (
     SELECT *
     FROM {{ ref('stg_atp_db__puntos') }}
+    WHERE punto_winner IS NOT NULL
 ),
 
 stats_jugador AS (
     SELECT *
     FROM {{ ref('stg_atp_db__estadisticas_punto_jug') }}
+    WHERE id_jugador IS NOT NULL
 ),
 
 partidos AS (

@@ -20,6 +20,6 @@ WITH partidos AS (
     {% if is_incremental() %}
       WHERE s.ingesta_tmz > (SELECT MAX(ingesta_tmz) FROM {{ this }})
     {% endif %}
-),
+)
 
 SELECT * FROM partidos
