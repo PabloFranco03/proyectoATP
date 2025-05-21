@@ -9,7 +9,7 @@ models:
     columns:
       - name: id_torneo
         description: "Identificador único del torneo."
-        data_type: integer
+        data_type: string
         tests:
           - not_null
           - unique
@@ -49,7 +49,7 @@ models:
     columns:
       - name: id_superficie
         description: "Identificador único de la superficie."
-        data_type: integer
+        data_type: string
         tests:
           - not_null
           - unique
@@ -85,7 +85,7 @@ models:
     columns:
       - name: id_ronda_torneo
         description: "Identificador único de la ronda dentro del torneo."
-        data_type: integer
+        data_type: string
         tests:
           - not_null
           - unique
@@ -117,7 +117,7 @@ models:
     columns:
       - name: id_nivel_torneo
         description: "Identificador único del nivel del torneo."
-        data_type: integer
+        data_type: string
         tests:
           - not_null
           - unique
@@ -149,7 +149,7 @@ models:
     columns:
       - name: id_jugador
         description: "Identificador único del jugador."
-        data_type: integer
+        data_type: string
         tests:
           - not_null
           - unique
@@ -197,7 +197,7 @@ models:
     columns:
       - name: fecha
         description: "Fecha en formato calendario (clave primaria natural)."
-        data_type: date
+        data_type: timestamp_ntz
         tests:
           - not_null
           - unique
@@ -252,7 +252,7 @@ models:
     columns:
       - name: id_torneo_anio
         description: "Identificador único del torneo en un año determinado."
-        data_type: integer
+        data_type: string
         tests:
           - not_null
           - unique
@@ -261,7 +261,7 @@ models:
 
       - name: id_torneo
         description: "Identificador del torneo base."
-        data_type: integer
+        data_type: string
         tests:
           - not_null
           - relationships:
@@ -272,7 +272,7 @@ models:
 
       - name: id_superficie
         description: "Identificador de la superficie en la que se juega el torneo ese año."
-        data_type: integer
+        data_type: string
         tests:
           - not_null
           - relationships:
@@ -283,7 +283,7 @@ models:
 
       - name: id_nivel_torneo
         description: "Identificador del nivel del torneo para ese año."
-        data_type: integer
+        data_type: string
         tests:
           - not_null
           - relationships:
@@ -320,7 +320,7 @@ models:
     columns:
       - name: id_ranking
         description: "Identificador único del registro de ranking."
-        data_type: integer
+        data_type: string
         tests:
           - not_null
           - unique
@@ -337,7 +337,7 @@ models:
 
       - name: id_jugador
         description: "Identificador del jugador en el ranking."
-        data_type: integer
+        data_type: string
         tests:
           - not_null
           - relationships:
@@ -366,7 +366,7 @@ models:
     columns:
       - name: id_partido_estadisticas
         description: "Identificador único del conjunto de estadísticas del jugador en un partido."
-        data_type: integer
+        data_type: string
         tests:
           - not_null
           - unique
@@ -375,7 +375,7 @@ models:
 
       - name: id_partido
         description: "Identificador del partido al que pertenecen estas estadísticas."
-        data_type: integer
+        data_type: string
         tests:
           - not_null
         constraints:
@@ -383,7 +383,7 @@ models:
 
       - name: id_jugador
         description: "Identificador del jugador al que pertenecen estas estadísticas."
-        data_type: integer
+        data_type: string
         tests:
           - not_null
           - relationships:
@@ -434,7 +434,7 @@ models:
 
       - name: id_torneo_anio
         description: "Identificador del torneo en ese año en el que se jugó el partido."
-        data_type: integer
+        data_type: string
         tests:
           - relationships:
               to: ref('dim_torneo_anio')
@@ -442,7 +442,7 @@ models:
 
       - name: id_ronda_torneo
         description: "Identificador de la ronda del torneo."
-        data_type: integer
+        data_type: string
         tests:
           - relationships:
               to: ref('dim_ronda_torneo')
@@ -450,7 +450,7 @@ models:
 
       - name: id_ganador
         description: "Identificador del jugador que ganó el partido."
-        data_type: integer
+        data_type: string
         tests:
           - relationships:
               to: ref('dim_jugador')
@@ -458,7 +458,7 @@ models:
 
       - name: id_perdedor
         description: "Identificador del jugador que perdió el partido."
-        data_type: integer
+        data_type: string
         tests:
           - relationships:
               to: ref('dim_jugador')

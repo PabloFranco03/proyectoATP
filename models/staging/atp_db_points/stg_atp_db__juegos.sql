@@ -1,6 +1,6 @@
 {{ config(
     materialized='incremental',
-    unique_key='id_game'
+    unique_key='id_juego'
 ) }}
 
 WITH puntos AS (
@@ -74,7 +74,7 @@ cambio_id AS (
 )
 
 SELECT 
-    {{ dbt_utils.generate_surrogate_key(['id_partido', 'numero_set', 'numero_juego']) }} AS id_game,
+    {{ dbt_utils.generate_surrogate_key(['id_partido', 'numero_set', 'numero_juego']) }} AS id_juego,
     {{ dbt_utils.generate_surrogate_key(['id_partido', 'numero_set']) }} AS id_set,
     numero_juego,
     ganador_juego_id,

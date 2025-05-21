@@ -29,7 +29,7 @@ mapping AS (
 
 limpio AS (
     SELECT
-        {{ dbt_utils.generate_surrogate_key(['m.id_partido', 'p.numero_set', 'p.numero_juego']) }} AS id_game,
+        {{ dbt_utils.generate_surrogate_key(['m.id_partido', 'p.numero_set', 'p.numero_juego']) }} AS id_juego,
         {{ dbt_utils.generate_surrogate_key(['m.id_partido', 'p.numero_punto_partido']) }} AS id_punto,
         p.numero_punto_partido AS num_punto_partido,
         p.rally_count,

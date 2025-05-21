@@ -18,7 +18,7 @@ WITH partidos AS (
 
     FROM {{ ref('base_atp_db__matches') }}
     {% if is_incremental() %}
-      WHERE s.ingesta_tmz > (SELECT MAX(ingesta_tmz) FROM {{ this }})
+      WHERE ingesta_tmz > (SELECT MAX(ingesta_tmz) FROM {{ this }})
     {% endif %}
 )
 

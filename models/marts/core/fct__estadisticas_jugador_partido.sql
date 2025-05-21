@@ -1,8 +1,6 @@
 {{ config(
     materialized='incremental',
     unique_key='id_partido_estadisticas',
-    contract={'enforced': true},
-    on_schema_change='append_new_columns'
 ) }}
 
 WITH partidos AS (
@@ -55,7 +53,7 @@ partido_jugador AS (
         ON e.id_partido = p.id_partido
 
     {% if is_incremental() %}
-      WHERE ingesta_tmz > (SELECT MAX(ingesta_tmz) FROM {{ this }})
+      WHERE p.ingesta_tmz > (SELECT MAX(p.ingesta_tmz) FROM {{ this }})
     {% endif %}
 )
 

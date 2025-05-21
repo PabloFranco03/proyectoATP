@@ -22,7 +22,11 @@ sets_enriquecidos AS (
         ingesta_tmz,
 
         (ganador_set_juegos + perdedor_set_juegos) AS total_juegos_set,
-        SAFE_DIVIDE(ganador_set_juegos, ganador_set_juegos + perdedor_set_juegos) AS pct_juegos_ganados,
+        CASE 
+            WHEN (ganador_set_juegos + perdedor_set_juegos) = 0 THEN NULL
+            ELSE ganador_set_juegos / (ganador_set_juegos + perdedor_set_juegos)
+        END AS pct_juegos_ganados_ganador,
+
 
         CASE 
             WHEN marcador_set IN ('7-6', '6-7') THEN TRUE

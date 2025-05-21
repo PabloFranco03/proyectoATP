@@ -11,8 +11,7 @@ WITH juegos_base AS (
 
 juegos_enriquecidos AS (
     SELECT
-        id_game,
-        id_partido,
+        id_juego,
         id_set,
         numero_juego,
         ganador_juego_id,

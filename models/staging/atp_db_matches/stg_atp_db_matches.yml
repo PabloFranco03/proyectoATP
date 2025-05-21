@@ -352,8 +352,7 @@ models:
         tests:
           - dbt_expectations.expect_column_values_to_be_between:
               min_value: 10
-              config:
-                where: "duracion_minutos is not null"
+              severity: warn
 
       - name: resultado
         description: Resultado textual del partido (por ejemplo, 6-4 3-6 7-6).

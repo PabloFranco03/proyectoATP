@@ -84,17 +84,17 @@ enriquecido AS (
 SELECT
     *,
     -- Porcentajes y ratios
-    SAFE_DIVIDE(total_aces, total_saques_1) AS pct_aces_por_1er_saque,
-    SAFE_DIVIDE(total_dobles_faltas, total_saques_2) AS pct_df_por_2do_saque,
-    SAFE_DIVIDE(total_winners, total_puntos_saque) AS pct_winners,
-    SAFE_DIVIDE(total_errores_nf, total_puntos_saque) AS pct_errores_nf,
-    SAFE_DIVIDE(total_subidas_red, total_puntos_saque) AS pct_sube_red,
-    SAFE_DIVIDE(total_puntos_ganados_en_red, total_subidas_red) AS pct_efectividad_en_red,
-    SAFE_DIVIDE(total_bp_convertidos, total_bp_oportunidades) AS pct_bp_convertidos,
-    SAFE_DIVIDE(total_bp_fallados, total_bp_oportunidades) AS pct_bp_fallados,
-    SAFE_DIVIDE(total_rally_corto, total_puntos_saque) AS pct_rally_corto,
-    SAFE_DIVIDE(total_rally_largo, total_puntos_saque) AS pct_rally_largo,
-    SAFE_DIVIDE(total_puntos_ganados, total_puntos_saque) AS pct_puntos_ganados_saque,
-    SAFE_DIVIDE(rally_3_ganados, total_rally_3) AS pct_ganados_rally_3
+    CASE WHEN total_saques_1 = 0 THEN NULL ELSE total_aces / total_saques_1 END AS pct_aces_por_1er_saque,
+    CASE WHEN total_saques_2 = 0 THEN NULL ELSE total_dobles_faltas / total_saques_2 END AS pct_df_por_2do_saque,
+    CASE WHEN total_puntos_saque = 0 THEN NULL ELSE total_winners / total_puntos_saque END AS pct_winners,
+    CASE WHEN total_puntos_saque = 0 THEN NULL ELSE total_errores_nf / total_puntos_saque END AS pct_errores_nf,
+    CASE WHEN total_puntos_saque = 0 THEN NULL ELSE total_subidas_red / total_puntos_saque END AS pct_sube_red,
+    CASE WHEN total_subidas_red = 0 THEN NULL ELSE total_puntos_ganados_en_red / total_subidas_red END AS pct_efectividad_en_red,
+    CASE WHEN total_bp_oportunidades = 0 THEN NULL ELSE total_bp_convertidos / total_bp_oportunidades END AS pct_bp_convertidos,
+    CASE WHEN total_bp_oportunidades = 0 THEN NULL ELSE total_bp_fallados / total_bp_oportunidades END AS pct_bp_fallados,
+    CASE WHEN total_puntos_saque = 0 THEN NULL ELSE total_rally_corto / total_puntos_saque END AS pct_rally_corto,
+    CASE WHEN total_puntos_saque = 0 THEN NULL ELSE total_rally_largo / total_puntos_saque END AS pct_rally_largo,
+    CASE WHEN total_puntos_saque = 0 THEN NULL ELSE total_puntos_ganados / total_puntos_saque END AS pct_puntos_ganados_saque,
+    CASE WHEN total_rally_3 = 0 THEN NULL ELSE rally_3_ganados / total_rally_3 END AS pct_ganados_rally_3
 
 FROM enriquecido

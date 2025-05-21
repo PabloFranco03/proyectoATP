@@ -23,7 +23,7 @@ partidos AS (
         id_ganador,
         id_perdedor,
         sets_maximos,
-        numero_partido_torneo
+        numero_partido_torneo,
     FROM {{ ref('stg_atp_db__partidos') }}
 ),
 
@@ -31,7 +31,7 @@ puntos_con_partido AS (
     SELECT 
         s.id_punto_estadisticas,
         s.id_punto,
-        p.id_game,
+        p.id_juego,
         p.num_punto_partido,
         p.rally_count,
         p.punto_winner,
@@ -42,6 +42,7 @@ puntos_con_partido AS (
         s.velocidad_saque,
         s.numero_saque,
         s.indicador_saque,
+        s.ha_ganado,
         s.ace,
         s.doble_falta,
         s.winner,
@@ -70,8 +71,11 @@ puntos_con_partido AS (
 
     FROM stats_jugador s
     LEFT JOIN puntos_base p ON s.id_punto = p.id_punto
-    LEFT JOIN {{ ref('stg_atp_db__juegos') }} j ON p.id_game = j.id_game
-    LEFT JOIN partidos pa ON j.id_partido = pa.id_partido
+    LEFT JOIN {{ ref('stg_atp_db__juegos') }} j ON p.id_juego = j.id_juego
+    LEFT JOIN {{ ref("stg_atp_db__sets")}} sets ON j.id_set = sets.id_set 
+    LEFT JOIN partidos pa ON sets.id_partido = pa.id_partido
+
+    WHERE p.id_juego IS NOT NULL
 )
 
 SELECT * 
@@ -80,3 +84,4 @@ FROM puntos_con_partido
 {% if is_incremental() %}
   WHERE ingesta_tmz > (SELECT MAX(ingesta_tmz) FROM {{ this }})
 {% endif %}
+

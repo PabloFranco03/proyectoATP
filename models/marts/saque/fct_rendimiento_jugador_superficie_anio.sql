@@ -73,8 +73,9 @@ jugadores AS (
 superficie AS (
     SELECT id_superficie, nombre_superficie
     FROM {{ ref('dim__superficie') }}
-)
+),
 
+todos AS (
 SELECT
     r.*,
     j.altura_cm,
@@ -82,22 +83,29 @@ SELECT
     s.nombre_superficie,
 
     -- Métricas derivadas
-    SAFE_DIVIDE(total_primeros_saques, total_puntos_saque) AS pct_primeros_saques_adentro,
-    SAFE_DIVIDE(total_puntos_saque - total_primeros_saques, total_puntos_saque) AS pct_segundos_saques_jugados,
-    SAFE_DIVIDE(total_puntos_ganados_1er, total_primeros_saques) AS pct_puntos_ganados_1er,
-    SAFE_DIVIDE(total_puntos_ganados_2do, total_puntos_saque - total_primeros_saques) AS pct_puntos_ganados_2do,
-    SAFE_DIVIDE(partidos_ganados, partidos_disputados) AS pct_partidos_ganados,
-    SAFE_DIVIDE(total_bp_salvados, total_bp_enfrentados) AS pct_break_points_salvados,
-    SAFE_DIVIDE(total_juegos_saque, partidos_disputados) AS juegos_saque_por_partido,
-    SAFE_DIVIDE(total_aces, partidos_disputados) AS aces_por_partido,
-    SAFE_DIVIDE(total_aces, total_juegos_saque) AS aces_por_juego_saque,
-    SAFE_DIVIDE(total_aces, total_primeros_saques) AS pct_aces_por_primer_saque,
-    SAFE_DIVIDE(total_aces, total_puntos_saque) AS pct_aces_sobre_total_puntos,
-    SAFE_DIVIDE(total_dobles_faltas, partidos_disputados) AS dobles_faltas_por_partido,
-    SAFE_DIVIDE(total_dobles_faltas, total_puntos_saque - total_primeros_saques) AS pct_dobles_faltas_sobre_2dos_saques,
-    SAFE_DIVIDE(total_aces, NULLIF(total_dobles_faltas, 0)) AS ratio_aces_dobles_faltas
+    CASE WHEN total_puntos_saque != 0 THEN total_primeros_saques / total_puntos_saque ELSE 0 END AS pct_primeros_saques_adentro,
+    CASE WHEN (total_puntos_saque - total_primeros_saques) != 0 THEN (total_puntos_saque - total_primeros_saques) / total_puntos_saque ELSE 0 END AS pct_segundos_saques_jugados,
+    CASE WHEN total_primeros_saques != 0 THEN total_puntos_ganados_1er / total_primeros_saques ELSE 0 END AS pct_puntos_ganados_1er,
+    CASE WHEN (total_puntos_saque - total_primeros_saques) != 0 THEN total_puntos_ganados_2do / (total_puntos_saque - total_primeros_saques) ELSE 0 END AS pct_puntos_ganados_2do,
+    CASE WHEN partidos_disputados != 0 THEN partidos_ganados / partidos_disputados ELSE 0 END AS pct_partidos_ganados,
+    CASE WHEN total_bp_enfrentados != 0 THEN total_bp_salvados / total_bp_enfrentados ELSE 0 END AS pct_break_points_salvados,
+    CASE WHEN partidos_disputados != 0 THEN total_juegos_saque / partidos_disputados ELSE 0 END AS juegos_saque_por_partido,
+    CASE WHEN partidos_disputados != 0 THEN total_aces / partidos_disputados ELSE 0 END AS aces_por_partido,
+    CASE WHEN total_juegos_saque != 0 THEN total_aces / total_juegos_saque ELSE 0 END AS aces_por_juego_saque,
+    CASE WHEN total_primeros_saques != 0 THEN total_aces / total_primeros_saques ELSE 0 END AS pct_aces_por_primer_saque,
+    CASE WHEN total_puntos_saque != 0 THEN total_aces / total_puntos_saque ELSE 0 END AS pct_aces_sobre_total_puntos,
+    CASE WHEN partidos_disputados != 0 THEN total_dobles_faltas / partidos_disputados ELSE 0 END AS dobles_faltas_por_partido,
+    CASE WHEN (total_puntos_saque - total_primeros_saques) != 0 THEN total_dobles_faltas / (total_puntos_saque - total_primeros_saques) ELSE 0 END AS pct_dobles_faltas_sobre_2dos_saques,
+    CASE WHEN total_dobles_faltas != 0 THEN total_aces / total_dobles_faltas ELSE 0 END AS ratio_aces_dobles_faltas,
 
 FROM resumen r
 LEFT JOIN jugadores j ON r.id_jugador = j.id_jugador
 LEFT JOIN ranking_final_anio rk ON r.id_jugador = rk.id_jugador AND r.anio = rk.anio
 LEFT JOIN superficie s ON r.id_superficie = s.id_superficie
+)
+
+SELECT *
+FROM todos 
+-- {% if is_incremental() %}
+--   WHERE ingesta_tmz > (SELECT MAX(ingesta_tmz) FROM {{ this }})
+-- {% endif %}
