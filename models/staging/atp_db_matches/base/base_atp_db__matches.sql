@@ -17,7 +17,7 @@ partidos AS (
         {{ dbt_utils.generate_surrogate_key(['tourney_id', 'match_num', 'winner_id']) }} AS id_partido_estadisticas_gan,
         {{ dbt_utils.generate_surrogate_key(['tourney_id', 'match_num', 'loser_id']) }} AS id_partido_estadisticas_per,
         {{ dbt_utils.generate_surrogate_key(['tourney_id', 'match_num']) }} AS id_partido,
-        {{ dbt_utils.generate_surrogate_key([limpiar_texto("tourney_name")]) }} AS id_torneo,
+        {{ limpiar_texto('tourney_name') }} AS torneo_limpio,
         tourney_name AS nombre_torneo,
         {{ dbt_utils.generate_surrogate_key([limpiar_texto("surface")]) }} AS id_superficie,
         surface AS superficie,
@@ -76,6 +76,7 @@ partidos AS (
 
 SELECT 
     *,
+    {{ dbt_utils.generate_surrogate_key(['torneo_limpio']) }} AS id_torneo,
     {{ dbt_utils.generate_surrogate_key(['year','slam_limpio','player1_limpio','player2_limpio']) }} AS match_id_unificada,
 FROM partidos
 

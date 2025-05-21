@@ -49,6 +49,7 @@ puntos_enriquecidos AS (
     FROM source p
     LEFT JOIN mapping m
       ON p.match_id = m.id_partido_otro
+    WHERE m.id_partido IS NOT NULL
 ),
 
 jugador1 AS (

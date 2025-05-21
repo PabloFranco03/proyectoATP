@@ -4,7 +4,7 @@
 ) }}
 
 WITH puntos AS (
-    SELECT
+    SELECT DISTINCT
         match_id,
         numero_set,
         numero_juego,
@@ -70,6 +70,7 @@ cambio_id AS (
     FROM agg_puntos p
     LEFT JOIN mapping m
         ON p.match_id = m.id_partido_otro
+    WHERE m.id_partido IS NOT NULL
     GROUP BY p.match_id, p.numero_set, p.numero_juego
 )
 

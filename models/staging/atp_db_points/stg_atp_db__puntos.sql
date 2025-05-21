@@ -51,6 +51,7 @@ limpio AS (
     FROM puntos p
     LEFT JOIN mapping m
       ON p.match_id = m.id_partido_otro
+    WHERE m.id_partido IS NOT NULL
 )
 
 SELECT *

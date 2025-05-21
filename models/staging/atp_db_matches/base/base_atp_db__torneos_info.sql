@@ -11,7 +11,7 @@ WITH raw_torneos_info AS (
 
 campos_info_torneo AS (
     SELECT
-        {{ dbt_utils.generate_surrogate_key([limpiar_texto("nombre_torneo")]) }} AS id_torneo,
+        {{ limpiar_texto('nombre_torneo') }} AS torneo_limpio, 
         nombre_torneo,
         pais,
         ciudad,
@@ -20,6 +20,7 @@ campos_info_torneo AS (
     FROM raw_torneos_info
 )
 
-SELECT *
+SELECT *,
+     {{ dbt_utils.generate_surrogate_key(['torneo_limpio']) }} AS id_torneo,
 FROM campos_info_torneo
 

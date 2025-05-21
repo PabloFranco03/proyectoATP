@@ -63,10 +63,11 @@ cambio_id AS (
     FROM puntos p
     LEFT JOIN mapping m
         ON p.match_id = m.id_partido_otro
+    WHERE m.id_partido IS NOT NULL
     GROUP BY p.match_id, p.numero_set
 )
 
-SELECT 
+SELECT
     id_partido,
     {{ dbt_utils.generate_surrogate_key(['id_partido', 'numero_set']) }} AS id_set,
     numero_set,
@@ -81,3 +82,7 @@ FROM cambio_id
 {% if is_incremental() %}
   WHERE ingesta_tmz > (SELECT MAX(ingesta_tmz) FROM {{ this }})
 {% endif %}
+
+
+
+

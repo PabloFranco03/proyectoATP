@@ -1,5 +1,3 @@
-{{ config(materialized='table') }}
-
 WITH torneo_base AS (
     SELECT DISTINCT
     id_torneo,

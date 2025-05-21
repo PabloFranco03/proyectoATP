@@ -11,7 +11,6 @@ models:
         data_type: string
         tests:
           - not_null
-          - unique
 
       - name: nombre
         description: Nombre oficial del torneo.
@@ -155,7 +154,7 @@ models:
         tests:
           - not_null
           - accepted_values:
-              values: ['F', 'SF', 'QF', 'R16', 'R32', 'R64', 'R128', 'RR', 'BR']
+              values: ['F', 'SF', 'QF', 'R16', 'R32', 'R64', 'R128', 'RR', 'BR', 'ER']
 
       - name: ronda_torneo_desc
         description: Descripción legible de la ronda del torneo.
@@ -226,7 +225,7 @@ models:
         data_type: string
         tests:
           - accepted_values:
-              values: ['R', 'L', 'U']
+              values: ['R', 'L', 'U', 'A']
               config:
                 where: "mano_dominante is not null"
 

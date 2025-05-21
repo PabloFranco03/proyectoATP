@@ -77,7 +77,7 @@ sources:
             description: "Mano dominante del jugador (R: derecha, L: izquierda, U: desconocida)."
             tests:
               - accepted_values:
-                  values: ['L', 'R', 'U']
+                  values: ['L', 'R', 'U', 'A']
 
           - name: winner_ht
             description: "Altura del jugador ganador en centímetros."
@@ -120,7 +120,7 @@ sources:
             description: "Mano dominante del jugador perdedor."
             tests:
               - accepted_values:
-                  values: ['L', 'R', 'U']
+                  values: ['L', 'R', 'U', 'A']
 
           - name: loser_ht
             description: "Altura del perdedor en cm."
@@ -160,7 +160,7 @@ sources:
             tests:
               - not_null
               - accepted_values:
-                  values: ['F', 'SF', 'QF', 'R16', 'R32', 'RR', 'R128', 'R64', 'BR']
+                  values: ['F', 'SF', 'QF', 'R16', 'R32', 'RR', 'R128', 'R64', 'BR', 'ER']
 
           - name: minutes
             description: "Duración total del partido en minutos."
