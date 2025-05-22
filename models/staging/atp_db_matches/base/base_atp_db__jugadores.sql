@@ -9,11 +9,11 @@ WITH source AS (
     FROM {{ source('extra_jugadores', 'jugadores') }}
 ),
 
-limpio AS (
+renamed AS (
     SELECT
         {{ dbt_utils.generate_surrogate_key(['player_id']) }} AS id_jugador,
-        name_first AS nombre,
-        name_last AS apellido,
+        TRIM(name_first) AS nombre,
+        TRIM(name_last) AS apellido,
         CONCAT_WS(' ', name_first, name_last) AS nombre_completo,
         hand AS mano_dominante,
         TRY_TO_DATE(dob, 'YYYYMMDD') AS fecha_nacimiento,
@@ -25,4 +25,4 @@ limpio AS (
 )
 
 SELECT *
-FROM limpio
+FROM renamed

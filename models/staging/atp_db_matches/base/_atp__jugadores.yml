@@ -4,7 +4,10 @@ sources:
     schema: ATP_DB
     tables:
       - name: jugadores
-        description: "Dimensión de jugadores ATP con datos personales y referencias externas."
+        description: >
+          Tabla dimensional con información personal de jugadores ATP, incluyendo
+          nombre, fecha de nacimiento, nacionalidad, características físicas y
+          referencias externas como Wikidata.
         columns:
           - name: player_id
             description: "Identificador único del jugador."
@@ -13,27 +16,32 @@ sources:
               - unique
 
           - name: name_first
-            description: "Nombre de pila del jugador."
+            description: "Primer nombre del jugador, tal como aparece en las fuentes oficiales."
 
           - name: name_last
-            description: "Apellido del jugador."
+            description: "Apellido del jugador, tal como aparece en las fuentes oficiales."
 
           - name: hand
-            description: "Mano dominante del jugador (R, L o U para desconocido)."
+            description: "Mano dominante del jugador: 'R' para diestro, 'L' para zurdo, 'U' si es desconocida."
+            tests:
+              - accepted_values:
+                  values: ['R', 'L', 'U', 'A']
 
           - name: dob
-            description: "Fecha de nacimiento en formato string (YYYYMMDD)."
+            description: >
+              Fecha de nacimiento del jugador en formato texto (YYYYMMDD). Se recomienda
+              convertir a tipo fecha en modelos posteriores para facilitar análisis cronológicos.
 
           - name: ioc
             description: "Código del país (COI)."
 
           - name: height
-            description: "Altura del jugador en centímetros."
+            description: "Altura del jugador en centímetros. Puede contener valores nulos si la información no está disponible."
 
           - name: wikidata_id
-            description: "Identificador del jugador en Wikidata (ej: Q69044)."
+            description: "Identificador único del jugador en Wikidata, usado para enriquecer con información externa (ejemplo: Q69044)."
 
           - name: ingesta_tmz
-            description: "Timestamp de la carga del fichero en Snowflake."
+            description: "Marca temporal que indica el momento en que el archivo fue cargado a Snowflake. Utilizado para trazabilidad de ingestas."
             tests:
               - not_null

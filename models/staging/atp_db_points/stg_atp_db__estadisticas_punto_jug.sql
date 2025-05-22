@@ -45,7 +45,7 @@ puntos_enriquecidos AS (
         p.p1_break_point, p.p2_break_point,
         p.p1_break_point_won, p.p2_break_point_won,
         p.p1_break_point_missed, p.p2_break_point_missed,
-        p.distacia_recorrida_p1, p.distacia_recorrida_p2
+        p.distancia_recorrida_p1, p.distancia_recorrida_p2
     FROM source p
     LEFT JOIN mapping m
       ON p.match_id = m.id_partido_otro
@@ -80,7 +80,7 @@ jugador1 AS (
         p1_break_point AS bp_oportunidad,
         p1_break_point_won AS bp_convertido,
         p1_break_point_missed AS bp_fallado,
-        distacia_recorrida_p1 AS distancia_recorrida,
+        distancia_recorrida_p1 AS distancia_recorrida,
         ingesta_tmz
     FROM puntos_enriquecidos
 ),
@@ -113,7 +113,7 @@ jugador2 AS (
         p2_break_point AS bp_oportunidad,
         p2_break_point_won AS bp_convertido,
         p2_break_point_missed AS bp_fallado,
-        distacia_recorrida_p2 AS distancia_recorrida,
+        distancia_recorrida_p2 AS distancia_recorrida,
         ingesta_tmz
     FROM puntos_enriquecidos
 ),

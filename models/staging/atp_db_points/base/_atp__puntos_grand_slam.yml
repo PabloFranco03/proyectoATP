@@ -4,7 +4,10 @@ sources:
     schema: ATP_DB
     tables:
       - name: puntos_grand_slam
-        description: "Datos punto por punto de partidos individuales. Cada fila representa un punto jugado."
+        description: >
+          Dataset granular que representa cada punto jugado en partidos individuales masculinos de torneos Grand Slam.
+          Cada fila contiene detalles del punto, incluyendo secuencia de juego, estadísticas del saque, rallies, errores,
+          ganadores, y contexto táctico. Útil para análisis detallado de rendimiento y dinámicas intra-partido.
 
         columns:
           - name: match_id
@@ -19,44 +22,67 @@ sources:
             description: "Número del set actual"
             tests:
               - not_null
+              - accepted_values:
+                  values: [1, 2, 3, 4, 5]
+
 
           - name: p1_games_won
-            description: "Juegos ganados por el Jugador 1 en el set actual"
+            description: "Juegos ganador por p1 en el set"
+            tests:
+              - dbt_expectations.expect_column_values_to_be_between:
+                  min_value: 0
 
           - name: p2_games_won
-            description: "Juegos ganados por el Jugador 2 en el set actual"
+            description: "Juegos ganador por p2 en el set"
+            tests:
+              - dbt_expectations.expect_column_values_to_be_between:
+                  min_value: 0
 
           - name: set_winner
-            description: "Ganador del set (1, 2 o 0 si aún está en curso)"
-
-          - name: game_no
-            description: "Número del juego dentro del set actual"
+            description: "Ganador del set, si se gana el set en ese punto"
             tests:
-              - not_null
+              - accepted_values:
+                  values: [0, 1, 2]
 
           - name: game_winner
-            description: "Ganador del juego (1 o 2, o 0 si en curso)"
+            description: "Ganador del juego, si se gana el juego en ese punto"
+            tests:
+              - accepted_values:
+                  values: [0, 1, 2]
+
+          - name: game_no
+            description: "Numero de juego del set"
+            tests:
+              - not_null
+              - dbt_expectations.expect_column_values_to_be_between:
+                  min_value: 1
 
           - name: point_number
             description: "Identificador interno del punto (puede ser numérico o cadena como '0X', '0Y')"
 
           - name: point_winner
             description: "Jugador que ganó el punto (1 o 2)"
+            tests:
+              - accepted_values:
+                  values: [0, 1, 2]
 
           - name: point_server
             description: "Jugador que sirvió el punto (1 o 2)"
+            tests:
+              - accepted_values:
+                  values: [0, 1, 2]
 
           - name: speed_kmh
-            description: "Velocidad del saque en km/h"
+            description: "Velocidad de saque en km/h"
 
           - name: rally
             description: "Secuencia codificada del punto (rally de golpes)"
 
           - name: p1_score
-            description: "Puntuación parcial del Jugador 1 en el punto actual (ej: 15, 30, 40, AD)"
+            description: "Puntos del jugador 1 en el punto"
 
           - name: p2_score
-            description: "Puntuación parcial del Jugador 2 en el punto actual"
+            description: "Puntos del jugador 2 en el punto"
 
           - name: p1_momentum
             description: "Indicador interno de momentum del Jugador 1"
@@ -72,81 +98,160 @@ sources:
 
           - name: p1_ace
             description: "Indica si el Jugador 1 hizo un ace en el punto (1 o 0)"
+            tests:
+              - accepted_values:
+                  values: [0, 1]
 
           - name: p2_ace
             description: "Indica si el Jugador 2 hizo un ace"
+            tests:
+              - accepted_values:
+                  values: [0, 1]
 
           - name: p1_winner
             description: "El Jugador 1 ganó el punto con un golpe ganador (1 o 0)"
+            tests:
+              - accepted_values:
+                  values: [0, 1]
 
           - name: p2_winner
             description: "El Jugador 2 ganó el punto con un golpe ganador"
+            tests:
+              - accepted_values:
+                  values: [0, 1]
 
           - name: p1_double_fault
             description: "Doble falta del Jugador 1 (1 o 0)"
+            tests:
+              - accepted_values:
+                  values: [0, 1]
 
           - name: p2_double_fault
             description: "Doble falta del Jugador 2"
+            tests:
+              - accepted_values:
+                  values: [0, 1]
 
           - name: p1_unf_err
             description: "Error no forzado cometido por el Jugador 1"
+            tests:
+              - accepted_values:
+                  values: [0, 1]
 
           - name: p2_unf_err
             description: "Error no forzado cometido por el Jugador 2"
+            tests:
+              - accepted_values:
+                  values: [0, 1]
 
           - name: p1_net_point
             description: "El Jugador 1 subió a la red"
+            tests:
+              - accepted_values:
+                  values: [0, 1]
 
           - name: p2_net_point
             description: "El Jugador 2 subió a la red"
+            tests:
+              - accepted_values:
+                  values: [0, 1]
 
           - name: p1_net_point_won
             description: "Punto ganado por el Jugador 1 tras subir a la red"
+            tests:
+              - accepted_values:
+                  values: [0, 1]
 
           - name: p2_net_point_won
             description: "Punto ganado por el Jugador 2 tras subir a la red"
+            tests:
+              - accepted_values:
+                  values: [0, 1]
 
           - name: p1_break_point
             description: "Break point a favor del Jugador 1 en ese punto"
+            tests:
+              - accepted_values:
+                  values: [0, 1]
 
           - name: p2_break_point
             description: "Break point a favor del Jugador 2 en ese punto"
+            tests:
+              - accepted_values:
+                  values: [0, 1]
 
           - name: p1_break_point_won
             description: "Break point convertido por el Jugador 1"
+            tests:
+              - accepted_values:
+                  values: [0, 1]
 
           - name: p2_break_point_won
             description: "Break point convertido por el Jugador 2"
+            tests:
+              - accepted_values:
+                  values: [0, 1]
 
           - name: p1_first_srv_in
             description: "Primer servicio dentro del Jugador 1 (1 o 0)"
+            tests:
+              - accepted_values:
+                  values: [0, 1]
 
           - name: p2_first_srv_in
             description: "Primer servicio dentro del Jugador 2"
+            tests:
+              - accepted_values:
+                  values: [0, 1]
 
           - name: p1_first_srv_won
             description: "Punto ganado por el Jugador 1 con primer saque"
+            tests:
+              - accepted_values:
+                  values: [0, 1]
 
           - name: p2_first_srv_won
             description: "Punto ganado por el Jugador 2 con primer saque"
+            tests:
+              - accepted_values:
+                  values: [0, 1]
 
           - name: p1_second_srv_in
             description: "Segundo saque dentro del Jugador 1"
+            tests:
+              - accepted_values:
+                  values: [0, 1]
 
           - name: p2_second_srv_in
             description: "Segundo saque dentro del Jugador 2"
+            tests:
+              - accepted_values:
+                  values: [0, 1]
 
           - name: p1_second_srv_won
             description: "Punto ganado por el Jugador 1 con segundo saque"
+            tests:
+              - accepted_values:
+                  values: [0, 1]
 
           - name: p2_second_srv_won
             description: "Punto ganado por el Jugador 2 con segundo saque"
+            tests:
+              - accepted_values:
+                  values: [0, 1]
 
           - name: p1_forced_error
             description: "Error forzado cometido por el Jugador 1"
+            tests:
+              - accepted_values:
+                  values: [0, 1]
 
           - name: p2_forced_error
             description: "Error forzado cometido por el Jugador 2"
+            tests:
+              - accepted_values:
+                  values: [0, 1]
+
 
           - name: history
             description: "Cadena codificada con eventos del punto, tipo slamtracker"

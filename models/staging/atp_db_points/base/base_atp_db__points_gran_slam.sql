@@ -11,7 +11,7 @@ WITh raw AS (
 renamed AS(
     SELECT
         match_id,
-        elapsed_time AS tiempo_trancurrido,
+        elapsed_time AS tiempo_transcurrido,
         set_no AS numero_set,
         p1_games_won AS p1_juegos_ganados,
         p2_games_won As p2_juegos_ganados,
@@ -49,8 +49,8 @@ renamed AS(
         serve_number AS numero_saque,
         winner_type AS tipo_winner,
         winner_shot_type AS tipo_golpeo_winner,
-        p1_distance_run AS distacia_recorrida_p1,
-        p2_distance_run AS distacia_recorrida_p2,
+        p1_distance_run AS distancia_recorrida_p1,
+        p2_distance_run AS distancia_recorrida_p2,
         rally_count,
         serve_width AS lateral_saque ,
         serve_depth AS profundidad_saque,

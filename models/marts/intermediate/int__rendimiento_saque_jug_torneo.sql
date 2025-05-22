@@ -1,3 +1,7 @@
+{{ config(
+    materialized = 'view'
+) }}
+
 WITH puntos_saque AS (
     SELECT *
     FROM {{ ref('fct__estadisticas_punto_jugador') }}
@@ -62,12 +66,23 @@ nivel_torneo AS (
     FROM {{ ref('dim__nivel_torneo') }}
 ),
 
+ranking AS (
+    SELECT 
+        id_jugador, 
+        posicion_ranking, 
+        puntos, 
+        EXTRACT(YEAR FROM ranking_fecha) AS anio_ranking
+    FROM {{ ref('dim__ranking_atp') }}
+),
+
 enriquecido AS (
     SELECT
         j.nombre_jugador,
         ta.anio_inicio AS anio,
         s.nombre_superficie,
         nt.nivel_torneo,
+        rk.posicion_ranking,
+        rk.puntos,
         r.*,
         s.es_rapida
     FROM resumen r
@@ -75,21 +90,23 @@ enriquecido AS (
     LEFT JOIN torneo_anio ta ON r.id_torneo_anio = ta.id_torneo_anio
     LEFT JOIN superficie s ON ta.id_superficie = s.id_superficie
     LEFT JOIN nivel_torneo nt ON ta.id_nivel_torneo = nt.id_nivel_torneo
+    LEFT JOIN ranking rk ON r.id_jugador = rk.id_jugador AND ta.anio_inicio = rk.anio_ranking
 )
 
 SELECT
     *,
-    -- Porcentajes y ratios
-    CASE WHEN total_saques_1 = 0 THEN NULL ELSE total_aces / total_saques_1 END AS pct_aces_por_1er_saque,
-    CASE WHEN total_saques_2 = 0 THEN NULL ELSE total_dobles_faltas / total_saques_2 END AS pct_df_por_2do_saque,
-    CASE WHEN total_puntos_saque = 0 THEN NULL ELSE total_winners / total_puntos_saque END AS pct_winners,
-    CASE WHEN total_puntos_saque = 0 THEN NULL ELSE total_errores_nf / total_puntos_saque END AS pct_errores_nf,
-    CASE WHEN total_puntos_saque = 0 THEN NULL ELSE total_subidas_red / total_puntos_saque END AS pct_sube_red,
-    CASE WHEN total_subidas_red = 0 THEN NULL ELSE total_puntos_ganados_en_red / total_subidas_red END AS pct_efectividad_en_red,
-    CASE WHEN total_puntos_saque = 0 THEN NULL ELSE total_rally_corto / total_puntos_saque END AS pct_rally_corto,
-    CASE WHEN total_puntos_saque = 0 THEN NULL ELSE total_rally_largo / total_puntos_saque END AS pct_rally_largo,
-    CASE WHEN total_puntos_saque = 0 THEN NULL ELSE total_puntos_ganados / total_puntos_saque END AS pct_puntos_ganados_saque,
+
+    -- Porcentajes y ratios (con ROUND)
+    ROUND(CASE WHEN total_saques_1 = 0 THEN NULL ELSE total_aces / total_saques_1 END, 3) AS pct_aces_por_1er_saque,
+    ROUND(CASE WHEN total_saques_2 = 0 THEN NULL ELSE total_dobles_faltas / total_saques_2 END, 3) AS pct_df_por_2do_saque,
+    ROUND(CASE WHEN total_puntos_saque = 0 THEN NULL ELSE total_winners / total_puntos_saque END, 3) AS pct_winners,
+    ROUND(CASE WHEN total_puntos_saque = 0 THEN NULL ELSE total_errores_nf / total_puntos_saque END, 3) AS pct_errores_nf,
+    ROUND(CASE WHEN total_puntos_saque = 0 THEN NULL ELSE total_subidas_red / total_puntos_saque END, 3) AS pct_sube_red,
+    ROUND(CASE WHEN total_subidas_red = 0 THEN NULL ELSE total_puntos_ganados_en_red / total_subidas_red END, 3) AS pct_efectividad_en_red,
+    ROUND(CASE WHEN total_puntos_saque = 0 THEN NULL ELSE total_rally_corto / total_puntos_saque END, 3) AS pct_rally_corto,
+    ROUND(CASE WHEN total_puntos_saque = 0 THEN NULL ELSE total_rally_largo / total_puntos_saque END, 3) AS pct_rally_largo,
+    ROUND(CASE WHEN total_puntos_saque = 0 THEN NULL ELSE total_puntos_ganados / total_puntos_saque END, 3) AS pct_puntos_ganados_saque
 
 FROM enriquecido
 
-where anio is not null
+WHERE anio IS NOT NULL

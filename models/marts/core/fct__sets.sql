@@ -24,7 +24,7 @@ sets_enriquecidos AS (
         (ganador_set_juegos + perdedor_set_juegos) AS total_juegos_set,
         CASE 
             WHEN (ganador_set_juegos + perdedor_set_juegos) = 0 THEN NULL
-            ELSE ganador_set_juegos / (ganador_set_juegos + perdedor_set_juegos)
+            ELSE ROUND(CAST(ganador_set_juegos AS FLOAT) / NULLIF(ganador_set_juegos + perdedor_set_juegos, 0), 3)
         END AS pct_juegos_ganados_ganador,
 
 

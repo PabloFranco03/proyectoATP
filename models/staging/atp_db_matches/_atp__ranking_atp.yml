@@ -4,12 +4,21 @@ sources:
     schema: ATP_DB
     tables:
       - name: ranking_atp
-        description: "Ranking ATP histórico desde el 2000 por jugador y fecha."
+        description: >
+          Histórico del ranking ATP desde el año 2000, con una fila por jugador y fecha.
+          Incluye posición en el ranking, puntos obtenidos y metadatos de ingesta.
+
         columns:
           - name: ranking_date
-            description: "Fecha del ranking en formato string (YYYYMMDD)."
+            description: >
+              Fecha del ranking en formato texto (YYYYMMDD). Se recomienda convertir a tipo fecha
+              para facilitar análisis temporales.
             tests:
               - not_null
+              - dbt_expectations.expect_column_values_to_match_regex:
+                  regex: '^\d{8}$'
+                  config:
+                    severity: warn
 
           - name: rank
             description: "Posición del jugador en el ranking."
@@ -34,6 +43,8 @@ sources:
                   severity: warn
 
           - name: ingesta_tmz
-            description: "Timestamp de la carga del fichero en Snowflake."
+            description: >
+              Marca temporal que indica el momento en que el archivo fue cargado en Snowflake
+              para trazabilidad de ingestas.
             tests:
               - not_null

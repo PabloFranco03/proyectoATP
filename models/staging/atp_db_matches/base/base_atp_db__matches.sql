@@ -19,7 +19,7 @@ partidos AS (
         {{ dbt_utils.generate_surrogate_key(['tourney_id', 'match_num']) }} AS id_partido,
         {{ limpiar_texto('tourney_name') }} AS torneo_limpio,
         tourney_name AS nombre_torneo,
-        {{ dbt_utils.generate_surrogate_key([limpiar_texto("surface")]) }} AS id_superficie,
+        {{ limpiar_texto('surface') }} AS superficie_limpia,
         surface AS superficie,
         draw_size as total_jugadores,
         {{ dbt_utils.generate_surrogate_key(['tourney_level']) }} AS id_nivel_torneo,
@@ -67,7 +67,6 @@ partidos AS (
         LOSER_RANK_POINTS,
         INGESTA_TMZ,
         CAST(TO_CHAR(TO_DATE(tourney_date, 'YYYYMMDD'), 'YYYY') AS INT) AS year,
-        {{ limpiar_texto('tourney_name') }} AS slam_limpio,
         {{ limpiar_texto('winner_name') }} AS player1_limpio,
         {{ limpiar_texto('loser_name') }} AS player2_limpio
 
@@ -77,7 +76,8 @@ partidos AS (
 SELECT 
     *,
     {{ dbt_utils.generate_surrogate_key(['torneo_limpio']) }} AS id_torneo,
-    {{ dbt_utils.generate_surrogate_key(['year','slam_limpio','player1_limpio','player2_limpio']) }} AS match_id_unificada,
+    {{ dbt_utils.generate_surrogate_key(['superficie_limpia']) }} AS id_superficie,
+    {{ dbt_utils.generate_surrogate_key(['year','torneo_limpio','player1_limpio','player2_limpio']) }} AS match_id_unificada
 FROM partidos
 
 

@@ -57,5 +57,5 @@ partido_jugador AS (
 SELECT * FROM partido_jugador
 
 {% if is_incremental() %}
-      WHERE p.ingesta_tmz > (SELECT MAX(p.ingesta_tmz) FROM {{ this }})
+      WHERE ingesta_tmz > (SELECT MAX(ingesta_tmz) FROM {{ this }})
 {% endif %}

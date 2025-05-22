@@ -2,16 +2,16 @@ sources:
   - name: atp
     database: ALUMNO26_DEV_BRONZE_DB_ATP
     schema: ATP_DB
-    description: "Datos brutos de partidos del circuito ATP."
+    description: >
+      Datos brutos provenientes de archivos oficiales del circuito ATP, que contienen
+      información detallada de cada partido individual del cuadro principal, incluyendo
+      resultados, estadísticas, características de los jugadores y metadatos del torneo.
 
     quoting:
       database: false
       schema: false
       identifier: false
 
-    #freshness:
-      #warn_after: {count: 24, period: hour}
-      #error_after: {count: 48, period: hour}
 
     tables:
       - name: matches

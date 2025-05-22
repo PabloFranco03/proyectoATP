@@ -22,6 +22,7 @@ enriquecida AS(
             WHEN 'R128'  THEN 'Sesentaicuatroavos de final'
             WHEN 'RR'    THEN 'Round Robin'
             WHEN 'BR'    THEN 'Partido por el 3er puesto'
+            WHEN 'ER'    THEN 'Primera ronda'
             ELSE 'Ronda desconocida'
         END AS ronda_torneo_desc
 

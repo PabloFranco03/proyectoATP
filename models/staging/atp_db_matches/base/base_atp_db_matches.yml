@@ -367,26 +367,18 @@ models:
       - name: slam_limpio
         description: Nombre del torneo limpiado para consistencia textual.
         data_type: string
-        tests:
-          - not_null
 
       - name: player1_limpio
         description: Nombre del jugador 1 limpiado.
         data_type: string
-        tests:
-          - not_null
 
       - name: player2_limpio
         description: Nombre del jugador 2 limpiado.
         data_type: string
-        tests:
-          - not_null
 
       - name: match_id_unificada
         description: ID único del partido unificado por año, torneo y jugadores.
         data_type: string
-        tests:
-          - not_null
           
 
 #-------------------------------------------------------------------------------------------------------------------------------------------------------

@@ -20,11 +20,9 @@ enriquecida AS (
             ELSE 'Desconocida'
         END AS nombre_superficie,
 
-        CASE superficie
-            WHEN 'Hard' THEN TRUE
-            WHEN 'Grass' THEN TRUE
-            WHEN 'Carpet' THEN TRUE
-            WHEN 'Clay' THEN FALSE
+        CASE
+            WHEN superficie IN ('Hard', 'Grass', 'Carpet') THEN TRUE
+            WHEN superficie = 'Clay' THEN FALSE
             ELSE NULL
         END AS es_rapida
 

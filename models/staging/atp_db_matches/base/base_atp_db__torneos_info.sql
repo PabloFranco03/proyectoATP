@@ -13,14 +13,14 @@ campos_info_torneo AS (
     SELECT
         {{ limpiar_texto('nombre_torneo') }} AS torneo_limpio, 
         nombre_torneo,
-        pais,
-        ciudad,
+        TRIM(pais) AS pais,
+        TRIM(ciudad) AS ciudad,
         primera_edicion,
-        estadio_principal
+        TRIM(estadio_principal) AS estadio_principal
     FROM raw_torneos_info
 )
 
 SELECT *,
-     {{ dbt_utils.generate_surrogate_key(['torneo_limpio']) }} AS id_torneo,
+    {{ dbt_utils.generate_surrogate_key(['torneo_limpio']) }} AS id_torneo
 FROM campos_info_torneo
 

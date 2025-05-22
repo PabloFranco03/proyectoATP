@@ -26,6 +26,9 @@ ganador AS (
         w_bpFaced AS bp_enfrentados,
         ingesta_tmz
     FROM source
+    {% if is_incremental() %}
+            where ingesta_tmz > (select max(ingesta_tmz) from {{ this }})
+    {% endif %}
 ),
 
 perdedor AS (
@@ -45,6 +48,9 @@ perdedor AS (
         l_bpFaced AS bp_enfrentados,
         ingesta_tmz
     FROM source
+    {% if is_incremental() %}
+            where ingesta_tmz > (select max(ingesta_tmz) from {{ this }})
+    {% endif %}
 ),
 
 estadisticas_union AS (
@@ -56,9 +62,6 @@ estadisticas_union AS (
 SELECT 
     *
 FROM estadisticas_union
-    {% if is_incremental() %}
-            where ingesta_tmz > (select max(ingesta_tmz) from {{ this }})
-    {% endif %}
 
 
 

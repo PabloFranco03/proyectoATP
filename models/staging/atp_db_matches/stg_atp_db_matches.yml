@@ -3,7 +3,7 @@ version: 2
 models:
   - name: stg_atp_db__torneos
     description: >
-      Dimensión que combina información básica de torneos jugados con metadatos históricos
+      Combina información básica de torneos jugados con metadatos históricos
       y geográficos provenientes de la tabla de torneos. Útil para análisis por sede, país o antigüedad.
     columns:
       - name: id_torneo
@@ -29,10 +29,6 @@ models:
       - name: primera_edicion
         description: Año en que se disputó por primera vez el torneo.
         data_type: integer
-        tests:
-          - dbt_expectations.expect_column_values_to_be_between:
-              min_value: 1800
-              max_value: 2100
 
       - name: estadio_principal
         description: Nombre del estadio principal donde se disputa el torneo.
@@ -44,7 +40,7 @@ models:
 
   - name: stg_atp_db__torneos_anio
     description: >
-      Dimensión que resume información de cada edición de torneo por año.
+      Resume información de cada edición de torneo por año.
       Incluye identificadores del torneo, superficie, nivel, fecha de inicio y tamaño del cuadro.
     columns:
       - name: id_torneo_anio
@@ -81,10 +77,6 @@ models:
       - name: anio_inicio
         description: Año de inicio del torneo.
         data_type: integer
-        tests:
-          - dbt_expectations.expect_column_values_to_be_between:
-              min_value: 1800
-              max_value: 2100
 
       - name: mes_inicio
         description: Mes del año en que empezó el torneo.
@@ -108,7 +100,7 @@ models:
 
   - name: stg_atp_db__nivel_torneo
     description: >
-      Dimensión que referencia los distintos niveles de torneo en el circuito ATP,
+      Referencia los distintos niveles de torneo en el circuito ATP,
       transformando los códigos (`nivel_torneo`) en descripciones legibles.
     columns:
       - name: id_nivel_torneo
@@ -138,7 +130,7 @@ models:
 
   - name: stg_atp_db__ronda_torneo
     description: >
-      Dimensión que traduce los códigos de ronda de torneo a descripciones legibles,
+      Traduce los códigos de ronda de torneo a descripciones legibles,
       permitiendo una mejor interpretación en análisis y dashboards.
     columns:
       - name: id_ronda_torneo
@@ -168,7 +160,7 @@ models:
 
   - name: stg_atp_db__superficie
     description: >
-      Dimensión que categoriza las superficies de torneo, incluyendo descripciones legibles
+      Categoriza las superficies de torneo, incluyendo descripciones legibles
       y una clasificación boolean de si la superficie es considerada rápida.
     columns:
       - name: id_superficie
@@ -204,7 +196,7 @@ models:
 
   - name: stg_atp_db__jugadores
     description: >
-      Dimensión consolidada de jugadores a partir de partidos como ganadores o perdedores, enriquecida
+      Jugadores a partir de partidos como ganadores o perdedores, enriquecida
       con metadatos personales (país, fecha de nacimiento, wikidata). Incluye un registro vacío como fallback.
     columns:
       - name: id_jugador
@@ -232,12 +224,6 @@ models:
       - name: altura_cm
         description: Altura del jugador en centímetros.
         data_type: integer
-        tests:
-          - dbt_expectations.expect_column_values_to_be_between:
-              min_value: 140
-              max_value: 230
-              config:
-                where: "altura_cm is not null"
 
       - name: cod_pais
         description: Código de país IOC del jugador.

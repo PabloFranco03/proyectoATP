@@ -5,7 +5,9 @@ sources:
     tables:
       - name: matches_grand_slam
         description: >
-          Partidos individuales masculinos de torneos Grand Slam.
+          Partidos individuales masculinos de torneos Grand Slam, con información básica de jugadores,
+          identificadores, evento y metadatos del entorno de juego
+
         columns:
           - name: match_id
             description: "Identificador único del partido (ej: 2024-wimbledon-1101)"

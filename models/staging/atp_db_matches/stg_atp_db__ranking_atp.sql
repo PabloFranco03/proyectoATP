@@ -11,7 +11,7 @@ WITH fuente AS (
 ),
 
 casted AS (
-    SELECT
+    SELECT 
         ranking_date,
         player_id,
         TO_DATE(ranking_date, 'YYYYMMDD') AS ranking_fecha,

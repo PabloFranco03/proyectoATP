@@ -1,3 +1,7 @@
+{{ config(
+    materialized = 'view'
+) }}
+
 WITH partidos_jugador AS (
     SELECT *
     FROM {{ ref('fct__estadisticas_jugador_partido') }}
@@ -75,21 +79,21 @@ SELECT
     rk.posicion_ranking,
     s.nombre_superficie,
 
-    -- Métricas derivadas
-    CASE WHEN total_puntos_saque != 0 THEN total_primeros_saques / total_puntos_saque ELSE 0 END AS pct_primeros_saques_adentro,
-    CASE WHEN (total_puntos_saque - total_primeros_saques) != 0 THEN (total_puntos_saque - total_primeros_saques) / total_puntos_saque ELSE 0 END AS pct_segundos_saques_jugados,
-    CASE WHEN total_primeros_saques != 0 THEN total_puntos_ganados_1er / total_primeros_saques ELSE 0 END AS pct_puntos_ganados_1er,
-    CASE WHEN (total_puntos_saque - total_primeros_saques) != 0 THEN total_puntos_ganados_2do / (total_puntos_saque - total_primeros_saques) ELSE 0 END AS pct_puntos_ganados_2do,
-    CASE WHEN partidos_disputados != 0 THEN partidos_ganados / partidos_disputados ELSE 0 END AS pct_partidos_ganados,
-    CASE WHEN total_bp_enfrentados != 0 THEN total_bp_salvados / total_bp_enfrentados ELSE 0 END AS pct_break_points_salvados,
-    CASE WHEN partidos_disputados != 0 THEN total_juegos_saque / partidos_disputados ELSE 0 END AS juegos_saque_por_partido,
-    CASE WHEN partidos_disputados != 0 THEN total_aces / partidos_disputados ELSE 0 END AS aces_por_partido,
-    CASE WHEN total_juegos_saque != 0 THEN total_aces / total_juegos_saque ELSE 0 END AS aces_por_juego_saque,
-    CASE WHEN total_primeros_saques != 0 THEN total_aces / total_primeros_saques ELSE 0 END AS pct_aces_por_primer_saque,
-    CASE WHEN total_puntos_saque != 0 THEN total_aces / total_puntos_saque ELSE 0 END AS pct_aces_sobre_total_puntos,
-    CASE WHEN partidos_disputados != 0 THEN total_dobles_faltas / partidos_disputados ELSE 0 END AS dobles_faltas_por_partido,
-    CASE WHEN (total_puntos_saque - total_primeros_saques) != 0 THEN total_dobles_faltas / (total_puntos_saque - total_primeros_saques) ELSE 0 END AS pct_dobles_faltas_sobre_2dos_saques,
-    CASE WHEN total_dobles_faltas != 0 THEN total_aces / total_dobles_faltas ELSE 0 END AS ratio_aces_dobles_faltas,
+    -- Métricas derivadas con ROUND
+    ROUND(CASE WHEN total_puntos_saque != 0 THEN total_primeros_saques / total_puntos_saque ELSE NULL END, 3) AS pct_primeros_saques_adentro,
+    ROUND(CASE WHEN (total_puntos_saque - total_primeros_saques) != 0 THEN (total_puntos_saque - total_primeros_saques) / total_puntos_saque ELSE NULL END, 3) AS pct_segundos_saques_jugados,
+    ROUND(CASE WHEN total_primeros_saques != 0 THEN total_puntos_ganados_1er / total_primeros_saques ELSE NULL END, 3) AS pct_puntos_ganados_1er,
+    ROUND(CASE WHEN (total_puntos_saque - total_primeros_saques) != 0 THEN total_puntos_ganados_2do / (total_puntos_saque - total_primeros_saques) ELSE NULL END, 3) AS pct_puntos_ganados_2do,
+    ROUND(CASE WHEN partidos_disputados != 0 THEN partidos_ganados / partidos_disputados ELSE NULL END, 3) AS pct_partidos_ganados,
+    ROUND(CASE WHEN total_bp_enfrentados != 0 THEN total_bp_salvados / total_bp_enfrentados ELSE NULL END, 3) AS pct_break_points_salvados,
+    ROUND(CASE WHEN partidos_disputados != 0 THEN total_juegos_saque / partidos_disputados ELSE NULL END, 3) AS juegos_saque_por_partido,
+    ROUND(CASE WHEN partidos_disputados != 0 THEN total_aces / partidos_disputados ELSE NULL END, 3) AS aces_por_partido,
+    ROUND(CASE WHEN total_juegos_saque != 0 THEN total_aces / total_juegos_saque ELSE NULL END, 3) AS aces_por_juego_saque,
+    ROUND(CASE WHEN total_primeros_saques != 0 THEN total_aces / total_primeros_saques ELSE NULL END, 3) AS pct_aces_por_primer_saque,
+    ROUND(CASE WHEN total_puntos_saque != 0 THEN total_aces / total_puntos_saque ELSE NULL END, 3) AS pct_aces_sobre_total_puntos,
+    ROUND(CASE WHEN partidos_disputados != 0 THEN total_dobles_faltas / partidos_disputados ELSE NULL END, 3) AS dobles_faltas_por_partido,
+    ROUND(CASE WHEN (total_puntos_saque - total_primeros_saques) != 0 THEN total_dobles_faltas / (total_puntos_saque - total_primeros_saques) ELSE NULL END, 3) AS pct_dobles_faltas_sobre_2dos_saques,
+    ROUND(CASE WHEN total_dobles_faltas != 0 THEN total_aces / total_dobles_faltas ELSE NULL END, 3) AS ratio_aces_dobles_faltas
 
 FROM resumen r
 LEFT JOIN jugadores j ON r.id_jugador = j.id_jugador
@@ -98,5 +102,4 @@ LEFT JOIN superficie s ON r.id_superficie = s.id_superficie
 )
 
 SELECT *
-FROM todos 
-
+FROM todos

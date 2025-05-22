@@ -1,10 +1,10 @@
 {{ config(
-    materialized = 'view'
+    materialized = 'table'
 ) }}
 
 WITH base AS (
     SELECT *
-    FROM {{ ref('fct_rendimiento_jugador_superficie_anio') }}
+    FROM {{ ref('int__rendimiento_jugador_superficie_anio') }}
     WHERE posicion_ranking <= 10
 ),
 

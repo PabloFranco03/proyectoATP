@@ -1,0 +1,294 @@
+version: 2
+
+models:
+  - name: int__rendimineto_saque_jug_torneo
+    description: >
+      Vista analítica que resume el rendimiento del saque por jugador y torneo en Grand Slam.
+      Agrega estadísticas ofensivas, errores, comportamiento en la red, eficiencia por tipo de saque,
+      velocidad, y contexto de ranking, superficie y nivel del torneo.
+
+    columns:
+      - name: nombre_jugador
+        description: Nombre completo del jugador.
+
+      - name: anio
+        description: Año del torneo en el que se jugó.
+
+      - name: nombre_superficie
+        description: Nombre legible de la superficie del torneo.
+
+      - name: nivel_torneo
+        description: Nivel del torneo según clasificación oficial ATP.
+
+      - name: posicion_ranking
+        description: Posición en el ranking ATP del jugador al inicio del torneo.
+
+      - name: puntos
+        description: Puntos ATP del jugador al momento del torneo.
+
+      - name: total_puntos_saque
+        description: Total de puntos jugados al saque por el jugador en el torneo.
+
+      - name: total_aces
+        description: Total de aces realizados por el jugador.
+
+      - name: total_dobles_faltas
+        description: Total de dobles faltas cometidas.
+
+      - name: total_winners
+        description: Total de winners logrados al saque.
+
+      - name: total_errores_nf
+        description: Total de errores no forzados cometidos al saque.
+
+      - name: total_subidas_red
+        description: Total de veces que el jugador subió a la red.
+
+      - name: total_puntos_ganados_en_red
+        description: Total de puntos ganados tras subir a la red.
+
+      - name: total_bp_oportunidades
+        description: Total de oportunidades de break point enfrentadas al saque.
+
+      - name: total_bp_convertidos
+        description: Total de break points salvados con éxito.
+
+      - name: total_bp_fallados
+        description: Total de break points no salvados.
+
+      - name: total_rally_corto
+        description: Cantidad de puntos al saque con rallies de 3 golpes o menos.
+
+      - name: total_rally_largo
+        description: Cantidad de puntos al saque con rallies de 5 golpes o más.
+
+      - name: total_rally_3
+        description: Cantidad exacta de rallies con 3 golpes.
+
+      - name: total_saques_1
+        description: Total de primeros servicios ejecutados.
+
+      - name: total_saques_2
+        description: Total de segundos servicios ejecutados.
+
+      - name: total_puntos_ganados
+        description: Total de puntos ganados por el jugador al saque.
+
+      - name: vel_media_1er_saque
+        description: Velocidad promedio del primer saque.
+
+      - name: vel_media_2do_saque
+        description: Velocidad promedio del segundo saque.
+
+      - name: media_distancia_recorrida
+        description: Distancia promedio recorrida por el jugador al saque.
+
+      - name: media_rally_count
+        description: Promedio de cantidad de golpes por punto al saque.
+
+      - name: es_rapida
+        description: TRUE si la superficie es considerada rápida.
+
+      - name: pct_aces_por_1er_saque
+        description: Porcentaje de aces por primer saque.
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 1
+
+      - name: pct_df_por_2do_saque
+        description: Porcentaje de dobles faltas por segundo saque.
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 1
+
+      - name: pct_winners
+        description: Porcentaje de winners respecto al total de puntos al saque.
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 1
+
+      - name: pct_errores_nf
+        description: Porcentaje de errores no forzados al saque.
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 1
+
+      - name: pct_sube_red
+        description: Porcentaje de puntos en los que subió a la red.
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 1
+
+      - name: pct_efectividad_en_red
+        description: Porcentaje de efectividad al subir a la red.
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 1
+
+      - name: pct_rally_corto
+        description: Porcentaje de puntos con rallies cortos (<= 3 golpes).
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 1
+
+      - name: pct_rally_largo
+        description: Porcentaje de puntos con rallies largos (>= 5 golpes).
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 1
+
+      - name: pct_puntos_ganados_saque
+        description: Porcentaje de puntos ganados sobre el total de puntos al saque.
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 1
+
+
+#-------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+  - name: int__rendimiento_jugador_superficie_anio
+    description: >
+      Vista analítica que resume el rendimiento de cada jugador por superficie y año en torneos de Grand Slam.
+      Incluye totales acumulados de partidos y estadísticas de servicio, así como métricas derivadas que evalúan
+      eficiencia, consistencia y estilo de juego en función del contexto de superficie.
+
+    columns:
+      - name: id_jugador
+        description: Identificador único del jugador.
+
+      - name: id_superficie
+        description: Identificador de la superficie del torneo.
+
+      - name: anio
+        description: Año en que se jugaron los partidos.
+
+      - name: partidos_disputados
+        description: Número total de partidos disputados por el jugador en esa superficie y año.
+
+      - name: partidos_ganados
+        description: Número de partidos ganados por el jugador en esa superficie y año.
+
+      - name: total_aces
+        description: Total de aces ejecutados.
+
+      - name: total_dobles_faltas
+        description: Total de dobles faltas cometidas.
+
+      - name: total_puntos_saque
+        description: Total de puntos jugados al saque.
+
+      - name: total_primeros_saques
+        description: Total de primeros servicios ejecutados.
+
+      - name: total_puntos_ganados_1er
+        description: Puntos ganados con el primer servicio.
+
+      - name: total_puntos_ganados_2do
+        description: Puntos ganados con el segundo servicio.
+
+      - name: total_juegos_saque
+        description: Juegos de servicio disputados.
+
+      - name: total_bp_salvados
+        description: Total de break points salvados.
+
+      - name: total_bp_enfrentados
+        description: Total de break points enfrentados.
+
+      - name: altura_cm
+        description: Altura del jugador en centímetros.
+
+      - name: posicion_ranking
+        description: Ranking ATP del jugador al final del año.
+
+      - name: nombre_superficie
+        description: Nombre de la superficie de juego (ej. Hard, Clay, Grass, Carpet).
+
+      - name: pct_primeros_saques_adentro
+        description: Porcentaje de primeros servicios dentro respecto al total de puntos al saque.
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 1
+
+      - name: pct_segundos_saques_jugados
+        description: Porcentaje de segundos saques jugados respecto al total de puntos al saque.
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 1
+
+      - name: pct_puntos_ganados_1er
+        description: Porcentaje de puntos ganados con el primer servicio.
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 1
+
+      - name: pct_puntos_ganados_2do
+        description: Porcentaje de puntos ganados con el segundo servicio.
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 1
+
+      - name: pct_partidos_ganados
+        description: Porcentaje de partidos ganados sobre partidos disputados.
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 1
+
+      - name: pct_break_points_salvados
+        description: Porcentaje de break points salvados sobre los enfrentados.
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 1
+
+      - name: juegos_saque_por_partido
+        description: Promedio de juegos al saque por partido jugado.
+
+      - name: aces_por_partido
+        description: Promedio de aces por partido jugado.
+
+      - name: aces_por_juego_saque
+        description: Promedio de aces por juego de servicio.
+
+      - name: pct_aces_por_primer_saque
+        description: Porcentaje de aces sobre primeros saques ejecutados.
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 1
+
+      - name: pct_aces_sobre_total_puntos
+        description: Porcentaje de aces sobre el total de puntos al saque.
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 1
+
+      - name: dobles_faltas_por_partido
+        description: Promedio de dobles faltas por partido jugado.
+
+      - name: pct_dobles_faltas_sobre_2dos_saques
+        description: Porcentaje de dobles faltas sobre segundos saques jugados.
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 1
+
+      - name: ratio_aces_dobles_faltas
+        description: Ratio entre aces y dobles faltas, útil para evaluar riesgo/agresividad en el servicio.
+
