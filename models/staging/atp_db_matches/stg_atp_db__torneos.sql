@@ -1,8 +1,9 @@
 WITH torneo_base AS (
     SELECT DISTINCT
     id_torneo,
-    nombre_torneo,
+    MAX(nombre_torneo) AS nombre_torneo
     FROM {{ ref('base_atp_db__matches') }}
+    group by id_torneo
 ),
 
 torneos_info_limpio AS (

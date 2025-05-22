@@ -52,9 +52,10 @@ partido_jugador AS (
     LEFT JOIN partidos p
         ON e.id_partido = p.id_partido
 
-    {% if is_incremental() %}
-      WHERE p.ingesta_tmz > (SELECT MAX(p.ingesta_tmz) FROM {{ this }})
-    {% endif %}
 )
 
 SELECT * FROM partido_jugador
+
+{% if is_incremental() %}
+      WHERE p.ingesta_tmz > (SELECT MAX(p.ingesta_tmz) FROM {{ this }})
+{% endif %}

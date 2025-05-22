@@ -48,3 +48,4 @@ agrupado AS (
 )
 
 SELECT * FROM agrupado
+order by anio asc
