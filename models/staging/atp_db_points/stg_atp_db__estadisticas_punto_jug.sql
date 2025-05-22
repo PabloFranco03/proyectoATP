@@ -6,7 +6,7 @@
 WITH source AS (
     SELECT *
     FROM {{ ref('base_atp_db__points_gran_slam') }}
-    WHERE numero_punto_partido IS NOT NULL
+    WHERE num_punto_partido IS NOT NULL
 ),
 
 mapping AS (
@@ -20,10 +20,10 @@ mapping AS (
 
 puntos_enriquecidos AS (
     SELECT
-        {{ dbt_utils.generate_surrogate_key(['m.id_partido', 'p.numero_punto_partido']) }} AS id_punto,
+        {{ dbt_utils.generate_surrogate_key(['m.id_partido', 'p.num_punto_partido']) }} AS id_punto,
         m.id_player1,
         m.id_player2,
-        p.numero_punto_partido,
+        p.num_punto_partido,
         p.ganador_punto,
         p.sacador,
         p.velocidad_saque_kmh,

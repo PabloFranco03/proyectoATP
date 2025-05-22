@@ -18,7 +18,7 @@ renamed AS(
         set_winner AS ganador_set,
         game_no AS numero_juego,
         game_winner AS ganador_juego,
-        point_number AS numero_punto_partido,
+        point_number AS num_punto_partido,
         point_winner As ganador_punto,
         point_server AS sacador,
         speed_kmh AS velocidad_saque_kmh,

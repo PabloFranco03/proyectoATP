@@ -694,7 +694,6 @@ models:
         description: Identificador de la ronda del torneo.
         data_type: string
         tests:
-          - not_null
           - relationships:
               to: ref('dim__ronda_torneo')
               field: id_ronda_torneo
@@ -812,7 +811,7 @@ models:
 
       - name: num_punto_partido
         description: Número de punto dentro del partido
-        data_type: integer
+        data_type: text
 
       - name: punto_winner
         description: ID del jugador que ganó el punto

@@ -8,14 +8,14 @@ WITH puntos AS (
         match_id,
         numero_set,
         numero_juego,
-        numero_punto_partido,
+        num_punto_partido,
         ganador_punto,
         p1_score,
         p2_score,
         rally_count,
         ingesta_tmz
     FROM {{ ref('base_atp_db__points_gran_slam') }}
-    WHERE numero_punto_partido IS NOT NULL
+    WHERE num_punto_partido IS NOT NULL
 ),
 
 mapping AS (
@@ -30,8 +30,8 @@ mapping AS (
 limpio AS (
     SELECT
         {{ dbt_utils.generate_surrogate_key(['m.id_partido', 'p.numero_set', 'p.numero_juego']) }} AS id_juego,
-        {{ dbt_utils.generate_surrogate_key(['m.id_partido', 'p.numero_punto_partido']) }} AS id_punto,
-        p.numero_punto_partido AS num_punto_partido,
+        {{ dbt_utils.generate_surrogate_key(['m.id_partido', 'p.num_punto_partido']) }} AS id_punto,
+        p.num_punto_partido AS num_punto_partido,
         p.rally_count,
         CONCAT(p.p1_score, '-', p.p2_score) AS resultado_momento_saque,
 
