@@ -1,0 +1,40 @@
+version: 2
+
+models:
+  - name: int__union_ids
+    description: >
+      Modelo intermedio que permite mapear los identificadores de partidos entre los datasets
+      de ATP y Grand Slam. Identifica los jugadores como player1 y player2 según el cruce
+      entre los ID unificados y las posiciones originales del dataset de Grand Slam.
+
+    columns:
+      - name: id_partido_otro
+        description: Identificador del partido en el dataset de Grand Slam.
+        tests:
+          - not_null
+          - unique
+
+      - name: id_partido
+        description: Identificador del partido en el modelo principal de ATP.
+        tests:
+          - not_null
+
+      - name: id_ganador
+        description: Identificador del jugador que ganó el partido (ATP).
+        tests:
+          - not_null
+
+      - name: id_perdedor
+        description: Identificador del jugador que perdió el partido (ATP).
+        tests:
+          - not_null
+
+      - name: id_player1
+        description: Identificador del jugador que figura como Player 1 en el dataset de Grand Slam, según el cruce.
+        tests:
+          - not_null
+
+      - name: id_player2
+        description: Identificador del jugador que figura como Player 2 en el dataset de Grand Slam, según el cruce.
+        tests:
+          - not_null

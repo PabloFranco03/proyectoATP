@@ -1,0 +1,262 @@
+version: 2
+
+models:
+  - name: stg_atp_db__sets
+    description: >
+      Modelo incremental que resume información a nivel de set para partidos de Grand Slam,
+      incluyendo identificadores de jugadores y sets, marcador parcial y lógica de mapeo con IDs
+      unificados.
+    columns:
+    - name: id_partido
+      description: Identificador del partido en el modelo principal.
+      data_type: string
+
+    - name: id_set
+      description: ID único del set, generado a partir del partido y número de set.
+      data_type: string
+      tests:
+        - unique
+
+    - name: numero_set
+      description: Número de set dentro del partido.
+      data_type: integer
+      tests:
+        - not_null
+        - dbt_expectations.expect_column_values_to_be_between:
+            min_value: 1
+
+    - name: ganador_set_id
+      description: ID del jugador que ganó el set.
+      data_type: string
+
+    - name: perdedor_set_id
+      description: ID del jugador que perdió el set.
+      data_type: string
+
+    - name: ganador_set_juegos
+      description: Juegos ganados por el jugador que ganó el set.
+      data_type: integer
+      tests:
+        - not_null:
+            severity: warn
+        - dbt_expectations.expect_column_values_to_be_between:
+            min_value: 6
+            max_value: 15
+            severity: warn
+
+    - name: perdedor_set_juegos
+      description: Juegos ganados por el jugador que perdió el set.
+      data_type: integer
+      tests:
+        - not_null
+        - dbt_expectations.expect_column_values_to_be_between:
+            min_value: 0
+            max_value: 15
+
+    - name: marcador_set
+      description: Representación textual del marcador del set (por ejemplo, 6-4).
+      data_type: string
+      tests:
+        - not_null
+
+    - name: ingesta_tmz
+      description: Timestamp de ingesta del dato.
+      data_type: timestamp
+      tests:
+        - not_null
+
+
+#--------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+  - name: stg_atp_db__juegos
+    description: >
+      Modelo incremental que resume información a nivel de juego para partidos de Grand Slam.
+      Incluye identificadores únicos de juego, set y partido, así como jugadores involucrados
+      y el sacador.
+    columns:
+      - name: id_juego
+        description: Identificador único del juego (set + partido + número de juego).
+        data_type: string
+        tests:
+          - not_null
+          - unique
+
+      - name: id_set
+        description: Identificador del set en el que se jugó el game.
+        data_type: string
+        tests:
+          - not_null
+
+      - name: numero_juego
+        description: Número del juego dentro del set.
+        data_type: integer
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 1
+
+      - name: ganador_game_id
+        description: Identificador del jugador que ganó el juego.
+        data_type: string
+
+      - name: perdedor_game_id
+        description: Identificador del jugador que perdió el juego.
+        data_type: string
+
+      - name: sacador_id
+        description: Identificador del jugador que sacó en el juego.
+        data_type: string
+
+      - name: ingesta_tmz
+        description: Timestamp de ingesta del dato.
+        data_type: timestamp
+        tests:
+          - not_null
+
+
+#---------------------------------------------------------------------------------------------------------------------------------------------
+
+
+  - name: stg_atp_db__puntos
+    description: >
+      Modelo incremental que registra cada punto jugado en partidos de Grand Slam.
+      Incluye el marcador al momento del saque, el jugador que ganó el punto, la duración del rally
+      y los identificadores normalizados del partido y juego.
+    columns:
+      - name: id_juego
+        description: Identificador único del juego al que pertenece el punto.
+        data_type: string
+        tests:
+          - not_null
+
+      - name: id_punto
+        description: Identificador único del punto (partido + número de punto).
+        data_type: string
+        tests:
+          - not_null
+          - unique
+
+      - name: num_punto_partido
+        description: Número de punto dentro del partido.
+        data_type: integer
+        tests:
+          - not_null
+
+      - name: rally_count
+        description: Cantidad de golpes en el rally del punto.
+        data_type: integer
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: resultado_momento_saque
+        description: Marcador textual en el momento del saque (e.g., 30-15).
+        data_type: string
+        tests:
+          - not_null
+
+      - name: punto_winner
+        description: ID del jugador que ganó el punto.
+        data_type: string
+
+      - name: punto_loser
+        description: ID del jugador que perdió el punto.
+        data_type: string
+
+      - name: ingesta_tmz
+        description: Timestamp de ingesta del dato.
+        data_type: timestamp
+        tests:
+          - not_null
+
+
+#---------------------------------------------------------------------------------------------------------------------------------------------
+
+
+  - name: stg_atp_db__estadisticas_punto_jug
+    description: >
+      Modelo incremental que transforma puntos de partidos de Grand Slam en una vista longitudinal
+      por jugador. Incluye estadísticas ofensivas, defensivas y contextuales de cada jugador en cada punto.
+    columns:
+      - name: id_punto_estadisticas
+        description: ID único por jugador y punto.
+        data_type: string
+        tests:
+          - not_null
+
+      - name: id_punto
+        description: ID del punto en el partido.
+        data_type: string
+        tests:
+          - not_null
+
+      - name: id_jugador
+        description: Identificador del jugador en el punto.
+        data_type: string
+
+      - name: es_jugador1
+        description: Indica si el jugador era el jugador 1 del partido.
+        data_type: boolean
+        tests:
+          - not_null
+
+      - name: ha_ganado
+        description: TRUE si el jugador ganó el punto.
+        data_type: boolean
+        tests:
+          - not_null
+
+      - name: velocidad_saque
+        description: Velocidad del saque en km/h (solo si sacó).
+        data_type: float
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: indicador_saque
+        description: Indicador del tipo de saque (primero o segundo, solo si sacó).
+        data_type: string
+
+      - name: numero_saque
+        description: Número del saque (1 o 2, solo si sacó).
+        data_type: integer
+        tests:
+          - accepted_values:
+              values: [0, 1, 2]
+              config:
+                where: "numero_saque is not null"
+
+      - name: tipo_winner
+        description: Tipo de golpe ganador (solo si aplicó).
+        data_type: string
+
+      - name: tipo_golpeo_winner
+        description: Técnica del golpe ganador (e.g., forehand, backhand).
+        data_type: string
+
+      - name: rally_count
+        description: Número de golpes en el punto.
+        data_type: integer
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: lateral_saque
+        description: Zona lateral donde cayó el saque.
+        data_type: string
+
+      - name: profundidad_saque
+        description: Zona de profundidad donde cayó el saque.
+        data_type: string
+
+      - name: profundidad_resto
+        description: Zona de profundidad del resto.
+        data_type: string
+
+      - name: ace
+        description: Indica si el jugador hizo un ace en el punto.
+        data_type: integer
+
+      - name: winner
+        description: Indica
